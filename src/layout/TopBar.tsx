@@ -4,6 +4,7 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MuiList from '@mui/material/List';
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { AccountBoxRounded,  FavoriteRounded, HelpRounded, PaidRounded } from '@mui/icons-material';
+import { useLocation } from 'react-router';
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
@@ -19,7 +20,7 @@ const AppBar = styled(MuiAppBar, {
     width: `calc(100%)`,
     height: "4.2rem",
     ...(open && {
-      width: `calc(100% - ${240}px)`,
+      width: `calc(100%)`,
       transition: theme.transitions.create(["width", "margin"], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
@@ -66,7 +67,33 @@ interface TopBarProps {
 
 }
 
+const TitleForHeader: React.FC<{ title: string }> = ({title}) => {
+  switch (title) {
+    case "items":
+      return <p>Danh sách sản phẩm</p>;
+    case "suppliers":
+      return <p>Nhà cung cấp</p>;
+    case "variants":
+      return <p>Quản lý kho</p>;
+    case "change":
+      return <p>Điều chỉnh giá vốn</p>;
+    case "purchase_orders":
+      return <p>Nhập hàng</p>;
+    case "stock_adjustments":
+      return <p>Kiểm hàng</p>;
+    case "order_suppliers":
+      return <p>Đặt hàng nhập</p>;
+    default: return <p>Tổng Quan</p>
+  }
+};
+
+
 const TopBar: React.FC<TopBarProps> = ({ open }) => {
+
+  const path = useLocation()
+  const title = path.pathname.split("/")[1]
+
+
   return (
     <AppBar position="static" open={open}>
       <Box
@@ -81,7 +108,7 @@ const TopBar: React.FC<TopBarProps> = ({ open }) => {
           mr: 6,
         }}
       >
-        <Title>Title</Title>
+        <Title><TitleForHeader title={title}/></Title>
         <List>
           <ListItemButton
             sx={{

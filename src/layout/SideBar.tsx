@@ -10,8 +10,25 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import logo from "../assets/Sapo-logo.png"
-import {  AddShoppingCartRounded, AddToPhotosRounded, AssignmentRounded,  CreditCardRounded,  Diversity3Rounded, HomeRounded, Inventory2Rounded, KeyboardArrowRight, KeyboardArrowUp, LocalShippingRounded, MenuBookRounded, PersonRounded, PointOfSaleRounded, QueryStatsOutlined, SettingsRounded, ShoppingBasketRounded } from "@mui/icons-material";
+import logo from "../assets/Sapo-logo.png";
+import {
+  AddShoppingCartRounded,
+  AddToPhotosRounded,
+  AssignmentRounded,
+  CreditCardRounded,
+  Diversity3Rounded,
+  HomeRounded,
+  Inventory2Rounded,
+  KeyboardArrowRight,
+  KeyboardArrowUp,
+  LocalShippingRounded,
+  MenuBookRounded,
+  PersonRounded,
+  PointOfSaleRounded,
+  QueryStatsOutlined,
+  SettingsRounded,
+  ShoppingBasketRounded,
+} from "@mui/icons-material";
 import { Box } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -27,7 +44,6 @@ const openedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflowX: "hidden",
-
 });
 
 const closedMixin = (theme: Theme): CSSObject => ({
@@ -50,18 +66,18 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   position: "sticky",
   top: 0,
   zIndex: theme.zIndex.drawer + 1,
-  backgroundColor : "#182537",
+  backgroundColor: "#182537",
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 const Image = styled("img")(({ theme }) => ({
-  width : 200,
+  width: 200,
   padding: theme.spacing(1, 3),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 const ScrollBar = styled("div")(() => ({
-  overflowX:"hidden",
+  overflowX: "hidden",
   overflowY: "auto", // Cho phép cuộn theo chiều dọc
   maxHeight: "calc(100vh - 48px)", // Giảm chiều cao tối đa để phù hợp với chiều cao hiện tại của trình duyệt
   "&::-webkit-scrollbar": {
@@ -69,14 +85,13 @@ const ScrollBar = styled("div")(() => ({
   },
   "&::-webkit-scrollbar-thumb": {
     backgroundColor: "#2B4263",
-    borderRadius : 10,
+    borderRadius: 10,
   },
   "&::-webkit-scrollbar-track": {
     backgroundColor: "#1F2937",
     // Track color, adjust as needed
   },
 }));
-
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -106,13 +121,16 @@ interface SideBarProps {
   handleDrawerClose: () => void;
 }
 
-export default function SideBar ({ open, handleDrawerOpen, handleDrawerClose } : SideBarProps) {
+export default function SideBar({
+  open,
+  handleDrawerOpen,
+  handleDrawerClose,
+}: SideBarProps) {
+  const [isExpanded, setExpanded] = React.useState(false);
 
-    const [isExpanded, setExpanded] = React.useState(false);
-
-    const handleToggle = () => {
-      setExpanded(!isExpanded);
-    };
+  const handleToggle = () => {
+    setExpanded(!isExpanded);
+  };
 
   return (
     <>
@@ -135,28 +153,30 @@ export default function SideBar ({ open, handleDrawerOpen, handleDrawerClose } :
           <Box>
             <List>
               <ListItem disablePadding sx={{ display: "block" }}>
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? "initial" : "center",
-                    px: 2.5,
-                  }}
-                >
-                  <ListItemIcon
+                <Link to="/" className="link">
+                  <ListItemButton
                     sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                      color: "#F3F4F5",
+                      minHeight: 48,
+                      justifyContent: open ? "initial" : "center",
+                      px: 2.5,
                     }}
                   >
-                    <HomeRounded sx={{ fontSize: 24 }} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Tổng quan"
-                    sx={{ opacity: open ? 1 : 0, color: "white" }}
-                  />
-                </ListItemButton>
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
+                        justifyContent: "center",
+                        color: "#F3F4F5",
+                      }}
+                    >
+                      <HomeRounded sx={{ fontSize: 24 }} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Tổng quan"
+                      sx={{ opacity: open ? 1 : 0, color: "white" }}
+                    />
+                  </ListItemButton>
+                </Link>
               </ListItem>
               <ListItem disablePadding sx={{ display: "block" }}>
                 <ListItemButton

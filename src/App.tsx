@@ -19,7 +19,17 @@ import ChangeCost from "./pages/ChangeCost/ChangeCost";
 import OrderItem from "./pages/OrderItem/OrderItem";
 import ExamItem from "./pages/ExamItem/ExamItem";
 import Provide from "./pages/Provide/Provide";
+import Login from "./pages/login/Login";
+import { RootState } from "./redux/store";
+import { useSelector } from "react-redux";
 
+type currentUserProps = {
+  username: string;
+  email: string;
+  role: string;
+  access_token: string;
+  refresh_token: string;
+};
 
 const Container = styled("div")(() => ({
   display: "flex",
@@ -27,6 +37,9 @@ const Container = styled("div")(() => ({
 
 function App() {
   const [open, setOpen] = useState(false);
+  const currentUser: currentUserProps | null = useSelector(
+    (state: RootState) => state?.currentUser?.currentUser
+  );
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -37,30 +50,41 @@ function App() {
   };
 
   return (
-    <Router>
-      <CssBaseline />
-      <Container>
-        <SideBar
-          open={open}
-          handleDrawerOpen={handleDrawerOpen}
-          handleDrawerClose={handleDrawerClose}
-        />
-        <div className="mainContainer">
-          <TopBar open={open} />
+    <>
+      {currentUser ? (
+        <Router>
+          <CssBaseline />
+          <Container>
+            <SideBar
+              open={open}
+              handleDrawerOpen={handleDrawerOpen}
+              handleDrawerClose={handleDrawerClose}
+            />
+            <div className="mainContainer">
+              <TopBar open={open} />
+              <Routes>
+                <Route path="*" element={<Navigate to="/" />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/items" element={<ListItem />} />
+                <Route path="/suppliers" element={<Provide />} />
+                <Route path="/variants" element={<ManageWarehouse />} />
+                <Route path="/change" element={<ChangeCost />} />
+                <Route path="/purchase_orders" element={<ImportItem />} />
+                <Route path="/stock_adjustments" element={<ExamItem />} />
+                <Route path="/order_suppliers" element={<OrderItem />} />
+              </Routes>
+            </div>
+          </Container>
+        </Router>
+      ) : (
+        <Router>
           <Routes>
-            <Route path="*" element={<Navigate to="/" />} />
-            <Route path="/" element={<Home />} />
-            <Route path="/items" element={<ListItem />} />
-            <Route path="/suppliers" element={<Provide />} />
-            <Route path="/variants" element={<ManageWarehouse />} />
-            <Route path="/change" element={<ChangeCost />} />
-            <Route path="/purchase_orders" element={<ImportItem />} />
-            <Route path="/stock_adjustments" element={<ExamItem />} />
-            <Route path="/order_suppliers" element={<OrderItem />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+            <Route path="/login" element={<Login />} />
           </Routes>
-        </div>
-      </Container>
-    </Router>
+        </Router>
+      )}
+    </>
   );
 }
 

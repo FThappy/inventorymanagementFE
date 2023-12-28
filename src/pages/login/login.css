@@ -1,0 +1,11 @@
+.login_container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: url("../public/—Pngtree—wallpaper\ of\ a\ scenic\ mountain_3137681.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin-top: 0;
+}
