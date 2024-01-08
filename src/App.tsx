@@ -22,6 +22,8 @@ import Provide from "./pages/Provide/Provide";
 import Login from "./pages/login/Login";
 import { RootState } from "./redux/store";
 import { useSelector } from "react-redux";
+import CreateProvide from "./pages/CreateProvide/CreateProvide";
+import ProvideDetail from "./pages/ProvideDetail/ProvideDetail";
 
 type currentUserProps = {
   username: string;
@@ -66,12 +68,14 @@ function App() {
                 <Route path="*" element={<Navigate to="/" />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/items" element={<ListItem />} />
-                <Route path="/suppliers" element={<Provide />} />
+                <Route path="/suppliers" element={<Provide open={open} />} />
                 <Route path="/variants" element={<ManageWarehouse />} />
                 <Route path="/change" element={<ChangeCost />} />
                 <Route path="/purchase_orders" element={<ImportItem />} />
                 <Route path="/stock_adjustments" element={<ExamItem />} />
                 <Route path="/order_suppliers" element={<OrderItem />} />
+                <Route path="/create_suppliers" element={<CreateProvide />} />
+                <Route path="/supplier/:id" element={<ProvideDetail />} />
               </Routes>
             </div>
           </Container>

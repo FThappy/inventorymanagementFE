@@ -1,13 +1,38 @@
-import {  Box, ListItemButton, ListItemIcon, ListItemText, styled } from '@mui/material'
-import React from 'react'
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import MuiList from '@mui/material/List';
+import {
+  Box,
+  Button,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  styled,
+} from "@mui/material";
+import React, { useState } from "react";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import MuiList from "@mui/material/List";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { AccountBoxRounded,  FavoriteRounded, HelpRounded, PaidRounded } from '@mui/icons-material';
-import { useLocation } from 'react-router';
+import {
+  FavoriteRounded,
+  HelpRounded,
+  PaidRounded,
+} from "@mui/icons-material";
+import { useLocation } from "react-router";
+import Typography from "@mui/material/Typography";
+import Popper from "@mui/material/Popper";
+import Fade from "@mui/material/Fade";
+import Paper from "@mui/material/Paper";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "../redux/currentUser";
+import { RootState } from "../redux/store";
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
+type currentUserProps = {
+  username: string;
+  email: string;
+  role: string;
+  access_token: string;
+  refresh_token: string;
+};
 
 
 const AppBar = styled(MuiAppBar, {
@@ -58,16 +83,15 @@ const List = styled(MuiList)(({ theme }) => ({
   margin: theme.spacing(0, 3),
 }));
 const Title = styled("h3")(({ theme }) => ({
-  fontSize : 24,
+  fontSize: 24,
   margin: theme.spacing(0, 0),
 }));
 
 interface TopBarProps {
   open: boolean;
-
 }
 
-const TitleForHeader: React.FC<{ title: string }> = ({title}) => {
+const TitleForHeader: React.FC<{ title: string }> = ({ title }) => {
   switch (title) {
     case "items":
       return <p>Danh sách sản phẩm</p>;
@@ -83,16 +107,40 @@ const TitleForHeader: React.FC<{ title: string }> = ({title}) => {
       return <p>Kiểm hàng</p>;
     case "order_suppliers":
       return <p>Đặt hàng nhập</p>;
-    default: return <p>Tổng Quan</p>
+    case "create_suppliers":
+      return <p>Thêm nhà cung cấp</p>;
+    case "supplier":
+      return <p>Thông tin nhà cung cấp</p>;
+    default:
+      return <p>Tổng Quan</p>;
   }
 };
 
-
 const TopBar: React.FC<TopBarProps> = ({ open }) => {
+  const [randomColor, setRandomColor] = useState(getRandomColor());
 
-  const path = useLocation()
-  const title = path.pathname.split("/")[1]
+  function getRandomColor() {
+    return "#" + Math.floor(Math.random() * 16777215).toString(16);
+  }
 
+  const currentUser: currentUserProps | null = useSelector(
+    (state: RootState) => state?.currentUser?.currentUser
+  );
+
+  const path = useLocation();
+  const title = path.pathname.split("/")[1];
+  const dispatch = useDispatch();
+  const [openLogout, setOpenLogout] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+    setOpenLogout((prev) => !prev);
+  };
+  const handleLogout = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    dispatch(logoutUser());
+  };
 
   return (
     <AppBar position="static" open={open}>
@@ -108,7 +156,9 @@ const TopBar: React.FC<TopBarProps> = ({ open }) => {
           mr: 6,
         }}
       >
-        <Title><TitleForHeader title={title}/></Title>
+        <Title>
+          <TitleForHeader title={title} />
+        </Title>
         <List>
           <ListItemButton
             sx={{
@@ -151,11 +201,56 @@ const TopBar: React.FC<TopBarProps> = ({ open }) => {
               justifyContent: open ? "initial" : "center",
               px: 2.5,
             }}
+            onClick={handleClick}
           >
-            <ListItemIcon sx={{ minWidth: 0 }}>
-              <AccountBoxRounded sx={{ fontSize: 24 }} />
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                borderRadius: 50,
+                backgroundColor: `${randomColor}`,
+                width: "2.5rem",
+                height: "2.5rem",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <p style={{ fontSize: 26, color: "white" }}>
+                {currentUser?.username[0]}
+              </p>
             </ListItemIcon>
-            <ListItemText primary="Người dùng" sx={{ color: "gray", ml: 1 }} />
+            <ListItemText
+              primary={currentUser?.username}
+              sx={{ color: "gray", ml: 1 }}
+            />
+            <Popper
+              open={openLogout}
+              anchorEl={anchorEl}
+              placement="bottom-end"
+              transition
+            >
+              {({ TransitionProps }) => (
+                <Fade {...TransitionProps} timeout={350}>
+                  <Paper>
+                    <Typography
+                      sx={{
+                        p: 2,
+                        width: "10rem",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignContent: "center",
+                      }}
+                    >
+                      <Button
+                        sx={{ margin: 0, padding: 0 }}
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </Button>
+                    </Typography>
+                  </Paper>
+                </Fade>
+              )}
+            </Popper>
           </ListItemButton>
           <ListItemButton
             sx={{
@@ -173,4 +268,4 @@ const TopBar: React.FC<TopBarProps> = ({ open }) => {
   );
 };
 
-export default TopBar
+export default TopBar;
