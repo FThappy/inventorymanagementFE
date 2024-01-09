@@ -1,9 +1,9 @@
-import {  Box, ListItemButton, ListItemIcon, ListItemText, styled } from '@mui/material'
+import { Box, ListItemButton, ListItemIcon, ListItemText, styled } from '@mui/material'
 import React from 'react'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MuiList from '@mui/material/List';
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { AccountBoxRounded,  FavoriteRounded, HelpRounded, PaidRounded } from '@mui/icons-material';
+import { AccountBoxRounded, FavoriteRounded, HelpRounded, PaidRounded } from '@mui/icons-material';
 import { useLocation } from 'react-router';
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -58,7 +58,7 @@ const List = styled(MuiList)(({ theme }) => ({
   margin: theme.spacing(0, 3),
 }));
 const Title = styled("h3")(({ theme }) => ({
-  fontSize : 24,
+  fontSize: 24,
   margin: theme.spacing(0, 0),
 }));
 
@@ -67,10 +67,14 @@ interface TopBarProps {
 
 }
 
-const TitleForHeader: React.FC<{ title: string }> = ({title}) => {
+const TitleForHeader: React.FC<{ title: string }> = ({ title }) => {
   switch (title) {
     case "items":
       return <p>Danh sách sản phẩm</p>;
+    case "add_product":
+      return <p>Thêm sản phẩm</p>;
+    case "product_detail":
+      return <p>Chi tiết sản phẩm</p>;
     case "suppliers":
       return <p>Nhà cung cấp</p>;
     case "variants":
@@ -108,7 +112,7 @@ const TopBar: React.FC<TopBarProps> = ({ open }) => {
           mr: 6,
         }}
       >
-        <Title><TitleForHeader title={title}/></Title>
+        <Title><TitleForHeader title={title} /></Title>
         <List>
           <ListItemButton
             sx={{

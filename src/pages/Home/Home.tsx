@@ -3,7 +3,9 @@ import "./Home.css"
 const Home = () => {
   return (
     <div className='homeContainer'>
-      Home
+      <h1 className="text-5xl font-">
+        Hello world!
+      </h1>
     </div>
   )
 }

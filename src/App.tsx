@@ -10,7 +10,7 @@ import {
 import "./App.css";
 import SideBar from "./layout/SideBar";
 import TopBar from "./layout/TopBar";
-import { CssBaseline, styled} from "@mui/material";
+import { CssBaseline, styled } from "@mui/material";
 import Home from "./pages/Home/Home";
 import ListItem from "./pages/ListItem/ListItem";
 import ImportItem from "./pages/ImportItem/ImportItem";
@@ -22,6 +22,8 @@ import Provide from "./pages/Provide/Provide";
 import Login from "./pages/login/Login";
 import { RootState } from "./redux/store";
 import { useSelector } from "react-redux";
+import ProductDetail from "./pages/ProductDetail/ProductDetail";
+import AddProduct from "./pages/AddProduct/AddProduct";
 
 type currentUserProps = {
   username: string;
@@ -65,13 +67,17 @@ function App() {
               <Routes>
                 <Route path="*" element={<Navigate to="/" />} />
                 <Route path="/" element={<Home />} />
-                <Route path="/items" element={<ListItem />} />
+                <Route path="/items" element={<ListItem />} >
+                  <Route path="/items/:id" element={<ProductDetail />} />
+                  <Route path="/items/add_product" element={<AddProduct />} />
+                </Route>
                 <Route path="/suppliers" element={<Provide />} />
                 <Route path="/variants" element={<ManageWarehouse />} />
                 <Route path="/change" element={<ChangeCost />} />
                 <Route path="/purchase_orders" element={<ImportItem />} />
                 <Route path="/stock_adjustments" element={<ExamItem />} />
                 <Route path="/order_suppliers" element={<OrderItem />} />
+
               </Routes>
             </div>
           </Container>

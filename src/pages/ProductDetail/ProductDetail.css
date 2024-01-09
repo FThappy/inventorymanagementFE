@@ -1,0 +1,5 @@
+.bg_item{
+    background: url("../../../public/vite.svg");
+    /* background-color: aquamarine; */
+    opacity: 60%;
+}
