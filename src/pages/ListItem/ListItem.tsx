@@ -9,7 +9,7 @@ import './ListItem.css';
 
 const ListItem = () => {
   return (
-    <div className="itemContainer font-sans">
+    <div className="itemContainer font-sans item_main">
       <div className="flex-row mx-1">
         <div className="py-4 px-2.5 w-fit float-left">
           <div className="flex flex-row">
@@ -25,25 +25,25 @@ const ListItem = () => {
         </div>
       </div>
 
-      <div className="flex flex-row mt-[65px] ml-3 opacity-[60%]">
-        <div className="flex flex-row rounded-md border-2 border-slate-600 w-[60%]">
+      <div className="flex flex-row mt-[65px] ml-3 opacity-[60%] w-full">
+        <div className="flex flex-row rounded-md border-2 border-slate-600 w-[55%]">
           <BsSearch className="mt-3 mx-2" />
           <p className=" opacity-[60%] my-2">Tìm kiếm theo mã sản phẩm, tên sản phẩm, barcode</p>
         </div>
-        <div className="ml-16 w-[13%] opacity-[60%]">
-          <div className="flex flex-row rounded-md border-2 border-black">
+        <div className="ml-16 w-[15%] opacity-[60%]">
+          <div className="flex flex-row rounded-md border-2 border-black justify-between">
             <p className=" my-2 ml-3">Loại sản phẩm</p>
-            <RiArrowDropDownLine className="mt-1.5 ml-2 text-3xl" />
+            <RiArrowDropDownLine className="mt-1.5 text-3xl" />
           </div>
         </div>
-        <div className="ml-5 w-[10%] opacity-[60%]">
-          <div className="flex flex-row rounded-md border-2 border-black">
+        <div className="ml-5 w-[13%] opacity-[60%]">
+          <div className="flex flex-row rounded-md border-2 border-black  justify-between">
             <p className="my-2 ml-3">Ngày tạo</p>
             <RiArrowDropDownLine className="mt-1.5 ml-2 text-3xl" />
           </div>
         </div>
-        <div className="ml-5 w-[10%] opacity-[60%]">
-          <div className="flex flex-row rounded-md border-2 border-black ">
+        <div className="ml-5 w-[13%] opacity-[60%]">
+          <div className="flex flex-row rounded-md border-2 border-black  justify-between">
             <p className="my-2 ml-3">Nhãn hiệu</p>
             <RiArrowDropDownLine className="mt-1.5 ml-2 text-3xl" />
           </div>
@@ -52,8 +52,8 @@ const ListItem = () => {
       </div>
 
       <div className="flex flex-row bg-[#D9D9D957] h-[46px] mt-5 justify-between">
-        <div className="rounded-full w-4 h-4 border-2 border-slate-500 mt-4 ml-16"></div>
-        <div className="ml-[35px] mt-3">Ảnh</div>
+        <div className="rounded-full w-4 h-4 border-2 border-slate-500 mt-4 ml-12"></div>
+        <div className="ml-[55px] mt-3">Ảnh</div>
         <div className="ml-[88px] mt-3">Sản phẩm</div>
         <div className="ml-[267px] mt-3">Nhãn hiệu</div>
         <div className="ml-[61px] mt-3">Có thể bán</div>
@@ -62,7 +62,7 @@ const ListItem = () => {
       </div>
 
       <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[46px] justify-between mt-1">
-        <RiArrowRightDoubleLine className="mt-2 text-xl ml-6" />
+        <RiArrowRightDoubleLine className="mt-2 text-xl ml-6 mr-3" />
         <span className="rounded-full w-4 h-4 border-2 border-slate-500 mt-3 -ml-10"></span>
         <div className="mt-0.5 ml-5">
           <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
@@ -75,7 +75,7 @@ const ListItem = () => {
       </div>
 
       <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[46px] justify-between mt-1">
-        <RiArrowRightDoubleLine className="mt-2 text-xl ml-6" />
+        <RiArrowRightDoubleLine className="mt-2 text-xl ml-6 mr-3" />
         <span className="rounded-full w-4 h-4 border-2 border-slate-500 mt-3 -ml-10"></span>
         <div className="mt-0.5 ml-5">
           <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
@@ -88,7 +88,7 @@ const ListItem = () => {
       </div>
 
       <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[46px] justify-between mt-1">
-        <RiArrowRightDoubleLine className="mt-2 text-xl ml-6" />
+        <RiArrowRightDoubleLine className="mt-2 text-xl ml-6 mr-3" />
         <span className="rounded-full w-4 h-4 border-2 border-slate-500 mt-3 -ml-10"></span>
         <div className="mt-0.5 ml-5">
           <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
@@ -102,7 +102,7 @@ const ListItem = () => {
 
       <div className="h-[383px] bg-[#fbf8f8] justify-between">
         <div className="flex flex-row justify-between">
-          <MdKeyboardDoubleArrowDown className="mt-2 text-xl ml-6 text-[#33A0FF]" />
+          <MdKeyboardDoubleArrowDown className="mt-2 text-xl ml-6 text-[#33A0FF] mr-3" />
           <span className="rounded-full w-4 h-4 border-2 border-slate-500 mt-3 -ml-10"></span>
           <div className="mt-0.5 ml-5">
             <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />

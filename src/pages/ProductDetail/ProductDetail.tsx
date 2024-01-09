@@ -49,7 +49,7 @@ const ItemDetail = () => {
                             <div className="mt-1 ml-11">
                                 <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
                             </div>
-                            <div className="mr-[120px] mt-1">
+                            <div className="w-2/3 mt-1">
                                 <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
                                 <p className="text-sm">ao_01-M-X-V</p>
                             </div>
@@ -59,7 +59,7 @@ const ItemDetail = () => {
                             <div className="mt-1 ml-11">
                                 <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
                             </div>
-                            <div className="mr-[120px] mt-0.5">
+                            <div className="w-2/3 mt-0.5">
                                 <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
                                 <p className="text-sm">ao_01-M-X-V</p>
                             </div>
@@ -69,7 +69,7 @@ const ItemDetail = () => {
                             <div className="mt-1 ml-11">
                                 <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
                             </div>
-                            <div className="mr-[120px] mt-0.5">
+                            <div className="w-2/3 mt-0.5">
                                 <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
                                 <p className="text-sm">ao_01-M-X-V</p>
                             </div>
@@ -79,7 +79,7 @@ const ItemDetail = () => {
                             <div className="mt-1 ml-11">
                                 <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
                             </div>
-                            <div className="mr-[120px] mt-0.5">
+                            <div className="w-2/3 mt-0.5">
                                 <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
                                 <p className="text-sm">ao_01-M-X-V</p>
                             </div>
@@ -89,7 +89,7 @@ const ItemDetail = () => {
                             <div className="mt-1 ml-11">
                                 <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
                             </div>
-                            <div className="mr-[120px] mt-0.5">
+                            <div className="w-2/3 mt-0.5">
                                 <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
                                 <p className="text-sm">ao_01-M-X-V</p>
                             </div>
@@ -99,7 +99,7 @@ const ItemDetail = () => {
                             <div className="mt-1 ml-11">
                                 <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
                             </div>
-                            <div className="mr-[120px] mt-0.5">
+                            <div className="w-2/3 mt-0.5">
                                 <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
                                 <p className="text-sm">ao_01-M-X-V</p>
                             </div>
@@ -108,7 +108,7 @@ const ItemDetail = () => {
                             <div className="mt-1 ml-11">
                                 <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
                             </div>
-                            <div className="mr-[120px] mt-0.5">
+                            <div className="w-2/3 mt-0.5">
                                 <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
                                 <p className="text-sm">ao_01-M-X-V</p>
                             </div>
