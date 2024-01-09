@@ -12,24 +12,33 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import distributor from "./distributor";
 
 const persistCurrentUserConfig = {
   key: "root",
   version: 1,
   storage,
 };
-
+const persistSuplierConfig = {
+  key: "suplier",
+  version: 1,
+  storage,
+};
 
 const persistCurrentUser = persistReducer(
   persistCurrentUserConfig,
   currentUserReducer
+);
+const persistSuplier = persistReducer(
+  persistSuplierConfig,
+  distributor
 );
 
 
 export const store = configureStore({
   reducer: {
     currentUser: persistCurrentUser,
-
+    suplier : persistSuplier
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
