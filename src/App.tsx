@@ -67,9 +67,9 @@ function App() {
               <Routes>
                 <Route path="*" element={<Navigate to="/" />} />
                 <Route path="/" element={<Home />} />
+                  <Route path="/add_product" element={<AddProduct />} />
+                  <Route path="/product_detail" element={<ProductDetail />} />
                 <Route path="/items" element={<ListItem />} >
-                  <Route path="/items/:id" element={<ProductDetail />} />
-                  <Route path="/items/add_product" element={<AddProduct />} />
                 </Route>
                 <Route path="/suppliers" element={<Provide />} />
                 <Route path="/variants" element={<ManageWarehouse />} />
