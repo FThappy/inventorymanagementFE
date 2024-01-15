@@ -1,3 +1,4 @@
+import { GridRowId } from "@mui/x-data-grid";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
@@ -16,14 +17,12 @@ type supilerProps = {
   updateAt: Date;
 };
 type updateSuplierProps = {
-  id : number;
+  id: number;
   suplierUpdate: supilerProps;
-}; 
-
-
+};
 
 type initialProps = {
-  suplier: supilerProps[] ;
+  suplier: supilerProps[];
   isLoading: boolean;
   error: boolean;
 };
@@ -46,7 +45,7 @@ const distributorSlice = createSlice({
     },
     updateSuplierSuccess: (
       state,
-      action: PayloadAction<updateSuplierProps>
+      action: PayloadAction<updateSuplierProps>,
     ) => {
       state.isLoading = false;
       state.suplier[
@@ -57,12 +56,24 @@ const distributorSlice = createSlice({
       state.isLoading = false;
       state.suplier?.splice(
         state.suplier.findIndex((item) => item.id == action.payload),
-        1
+        1,
       );
+    },
+    deleteMultiSuplierSuccess: (state, action: PayloadAction<GridRowId[]>) => {
+      action.payload.map((itemss) =>{state.suplier?.splice(
+        state.suplier.findIndex((item) => item.id == itemss),
+        1,
+      );})
+      
     },
   },
 });
 
-export const { getAll, addNewSuplier, deleteSuplierSuccess, updateSuplierSuccess } =
-  distributorSlice.actions;
+export const {
+  getAll,
+  addNewSuplier,
+  deleteSuplierSuccess,
+  updateSuplierSuccess,
+  deleteMultiSuplierSuccess,
+} = distributorSlice.actions;
 export default distributorSlice.reducer;

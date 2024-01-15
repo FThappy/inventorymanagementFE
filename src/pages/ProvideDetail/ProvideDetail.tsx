@@ -7,8 +7,9 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { checkValidGmail } from "../../utils/checkValidGmail";
 import { checkValidPhoneNumber } from "../../utils/checkValidPhoneNumber";
-import { updateSuplierSuccess } from "../../redux/distributor";
+import distributor, { updateSuplierSuccess } from "../../redux/distributor";
 import { updateSuplier } from "../../api/apiUpdateSuplier";
+import ListProduct from "../../components/ListProduct/ListProduct";
 
 type supilerProps = {
   id: number ;
@@ -72,13 +73,18 @@ type dataProps = {
   createAt?: Date;
   updateAt?: Date;
 };
+type Props = {
+  open: boolean;
+};
 const Button = ({ type }: StatusProp) => {
   return (
     <button className={`statusButton ${type}`}>{type ? type : "New"}</button>
   );
 };
 
-const ProvideDetail = () => {
+
+
+const ProvideDetail = ({open} : Props) => {
   const location = useLocation();
   const suplierId = location.pathname?.split("/")[2] || null;
 
@@ -101,7 +107,7 @@ const ProvideDetail = () => {
   const dispatch = useDispatch();
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     setInputs((inputs) => {
       return {
@@ -114,7 +120,7 @@ const ProvideDetail = () => {
     const getProvine = async () => {
       try {
         const res = await axios.get(
-          "https://provinces.open-api.vn/api/?depth=3"
+          "https://provinces.open-api.vn/api/?depth=3",
         );
         setProvine(res.data);
       } catch (error) {
@@ -167,9 +173,9 @@ const ProvideDetail = () => {
     }
     if (!city || !ward || !district || !inputs.address) {
       inputs.address = suplier?.address;
-    }else{
-      console.log(city , district , ward )
-      inputs.address = `${city}, ${district}, ${ward}, ${inputs.address}` ;
+    } else {
+      console.log(city, district, ward);
+      inputs.address = `${city}, ${district}, ${ward}, ${inputs.address}`;
     }
     if (!checkValidGmail(inputs.email)) {
       toast.error("Mail bị sai vui lòng nhập lại", {
@@ -215,7 +221,7 @@ const ProvideDetail = () => {
       const res = await updateSuplier(dataSend);
       console.log(res.data);
       dispatch(
-        updateSuplierSuccess({ id: suplier!.id, suplierUpdate: res.data })
+        updateSuplierSuccess({ id: suplier!.id, suplierUpdate: res.data }),
       );
       setSuplier(res.data);
       toast.success("Sửa thành công nhà cung cấp", {
@@ -229,8 +235,6 @@ const ProvideDetail = () => {
         theme: "light",
       });
       navigate("/suppliers");
-      
-      
     } catch (error) {
       toast.error("Lỗi sever vui lòng thử lại", {
         position: "bottom-right",
@@ -331,6 +335,7 @@ const ProvideDetail = () => {
           </div>
         </div>
       </div>
+      <ListProduct open={open} />
       <form className="provide-container1">
         <div className="titleContainer">
           <h2 className="title">Chỉnh sửa thông tin nhà cung cấp :</h2>

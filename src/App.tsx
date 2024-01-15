@@ -24,6 +24,8 @@ import { RootState } from "./redux/store";
 import { useSelector } from "react-redux";
 import ProductDetail from "./pages/ProductDetail/ProductDetail";
 import AddProduct from "./pages/AddProduct/AddProduct";
+import ProvideDetail from "./pages/ProvideDetail/ProvideDetail";
+import CreateProvide from "./pages/CreateProvide/CreateProvide";
 
 type currentUserProps = {
   username: string;
@@ -67,18 +69,20 @@ function App() {
               <Routes>
                 <Route path="*" element={<Navigate to="/" />} />
                 <Route path="/" element={<Home />} />
-                  <Route path="/add_product" element={<AddProduct />} />
-                  <Route path="/product_detail" element={<ProductDetail />} />
-                <Route path="/items" element={<ListItem />} >
-                </Route>
-                <Route path="/suppliers" element={<Provide />} />
+                <Route path="/add_product" element={<AddProduct />} />
+                <Route path="/product_detail" element={<ProductDetail />} />
+                <Route path="/items" element={<ListItem />}></Route>
+                <Route path="/suppliers" element={<Provide open={open} />} />
                 <Route path="/variants" element={<ManageWarehouse />} />
                 <Route path="/change" element={<ChangeCost />} />
                 <Route path="/purchase_orders" element={<ImportItem />} />
                 <Route path="/stock_adjustments" element={<ExamItem />} />
                 <Route path="/order_suppliers" element={<OrderItem />} />
                 <Route path="/create_suppliers" element={<CreateProvide />} />
-                <Route path="/supplier/:id" element={<ProvideDetail />} />
+                <Route
+                  path="/supplier/:id"
+                  element={<ProvideDetail open={open} />}
+                />
               </Routes>
             </div>
           </Container>

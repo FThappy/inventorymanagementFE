@@ -1,18 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridRowId,
+} from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
-import Grid from "@mui/material/Grid";
+
 import "./Provide.css";
 import { userRequest } from "../../api/requestMethod";
+import Grid from "@mui/material/Grid";
 import { DeleteOutline } from "@mui/icons-material";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteSuplierSuccess, getAll } from "../../redux/distributor";
+import {
+  deleteMultiSuplierSuccess,
+  deleteSuplierSuccess,
+  getAll,
+} from "../../redux/distributor";
 import { toast } from "react-toastify";
 import { deleteSuplier } from "../../api/apiDeleteSuplier";
 import { RootState } from "../../redux/store";
+import { deleteMulti } from "../../api/apiDeleteMulti";
+import { utils, writeFile } from "xlsx";
 
 type data = {
   id: number;
@@ -35,7 +46,7 @@ type StatusProp = {
   type: string;
 };
 type supilerProps = {
-  id: number ;
+  id: number;
   name: string;
   email: string;
   phone: string;
@@ -59,9 +70,12 @@ const Provide = ({ open }: Props) => {
   const [data, setData] = useState<data[]>([]);
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
+  const [rowSelectionModel, setRowSelectionModel] = React.useState<GridRowId[]>(
+    [],
+  );
 
   const suplier: supilerProps[] = useSelector(
-    (state: RootState) => state?.suplier?.suplier
+    (state: RootState) => state?.suplier?.suplier,
   );
 
   const dispatch = useDispatch();
@@ -91,7 +105,7 @@ const Provide = ({ open }: Props) => {
       }
     };
     datas();
-  }, [page]);
+  }, [page, dispatch]);
   useEffect(() => {
     const total = async () => {
       try {
@@ -104,18 +118,50 @@ const Provide = ({ open }: Props) => {
       }
     };
     total();
-  }, []);
+  }, [page]);
   const handlePageChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
-    page: number
+    page: number,
   ) => {
     setPage(page - 1);
   };
-  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>, id:number) => {
+  const handleDelete = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: number,
+  ) => {
     e.preventDefault();
     try {
-      await deleteSuplier(id)
-      dispatch(deleteSuplierSuccess(id))
+      await deleteSuplier(id);
+      dispatch(deleteSuplierSuccess(id));
+      toast.success("Xóa thành công nhà cung cấp", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } catch (error) {
+      toast.error("Lỗi sever vui lòng thử lại", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  };
+  const handleDeleteMulti = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    try {
+      const res = await deleteMulti(rowSelectionModel);
+      console.log(res);
+      dispatch(deleteMultiSuplierSuccess(rowSelectionModel));
       toast.success("Xóa thành công nhà cung cấp", {
         position: "bottom-right",
         autoClose: 5000,
@@ -140,6 +186,57 @@ const Provide = ({ open }: Props) => {
     }
   };
 
+  const exportFile = () => {
+    const data = suplier.map((item) => {
+      const date = new Date(parseInt(item.createAt, 10));
+      const created: string = date.toLocaleDateString();
+
+      const update = new Date(parseInt(item.updateAt, 10));
+      const updated: string = update.toLocaleDateString();
+
+      const dataSend = {
+        Id: item.id,
+        "Mã nhà cung cấp": item.distributorCode,
+        "Tên nhà cung cấp": item.name,
+        Email: item.email,
+        "SĐT Nhà cung cấp": item.phone,
+        Status: item.status ? item.status : "Nhà cung cấp mới",
+        "Địa chỉ web": item.web ? item.web : "Chưa cung cấp",
+        "Mô tả": item.description, 
+        "Phương thức thanh toán": item.payment,
+        "Địa chỉ": item.address,
+        "Thời gian tạo": created,
+        "Chỉnh sửa mới nhất": updated,
+      };
+
+      return dataSend;
+    });
+
+    const ws = utils.json_to_sheet(data);
+
+    const wb = utils.book_new();
+
+    // Đặt độ rộng của các cột
+  ws["!cols"] = [
+    { wpx: 50 }, // Id
+    { wpx: 150 }, // Mã nhà cung cấp
+    { wpx: 200 }, // Tên nhà cung cấp
+    { wpx: 150 }, // Email
+    { wpx: 150 }, // SĐT Nhà cung cấp
+    { wpx: 200 },
+    { wpx: 250 },
+    { wpx: 300 },
+    { wpx: 100 },
+    { wpx: 300 },
+    { wpx: 200 },
+    { wpx: 200 },
+  ];
+
+    utils.book_append_sheet(wb, ws, "Data");
+
+    writeFile(wb, "Danh sách nhà cung cấp.xlsx");
+  };
+
   function CustomFooterStatusComponent() {
     return (
       <div className="containerSSS">
@@ -151,7 +248,7 @@ const Provide = ({ open }: Props) => {
             onChange={(event, newPage) =>
               handlePageChange(
                 event as React.ChangeEvent<HTMLInputElement>,
-                newPage
+                newPage,
               )
             }
           />
@@ -342,7 +439,10 @@ const Provide = ({ open }: Props) => {
       renderCell: (params) => {
         return (
           <Grid container justifyContent="center" alignItems="center">
-            <button style={{border:"none", background:"none"}} onClick={(e) => handleDelete(e,params.row.id)}>
+            <button
+              style={{ border: "none", background: "none" }}
+              onClick={(e) => handleDelete(e, params.row.id)}
+            >
               <DeleteOutline
                 className="productListDelete"
                 sx={{ fontSize: "2.3rem", marginLeft: "0.5rem" }}
@@ -357,9 +457,12 @@ const Provide = ({ open }: Props) => {
   return (
     <div className="provideContainer">
       <div className="btnsContainer">
-        <button className="exportFile">
+        <button className="exportFile" onClick={exportFile}>
           <FileDownloadIcon />
           Xuất File
+        </button>
+        <button className="deleteSuplier" onClick={handleDeleteMulti}>
+          Xóa nhiều nhà cung cấp
         </button>
         <Link to="/create_suppliers" className="link">
           <button className="addSuplier">Thêm nhà cung cấp</button>
@@ -377,6 +480,11 @@ const Provide = ({ open }: Props) => {
         rows={suplier}
         disableRowSelectionOnClick
         columns={columns}
+        checkboxSelection
+        onRowSelectionModelChange={(newRowSelectionModel: GridRowId[]) => {
+          setRowSelectionModel(newRowSelectionModel);
+        }}
+        rowSelectionModel={rowSelectionModel}
         autoPageSize
         slots={{
           footer: CustomFooterStatusComponent,

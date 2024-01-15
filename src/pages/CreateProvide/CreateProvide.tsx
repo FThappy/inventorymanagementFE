@@ -142,7 +142,7 @@ const CreateProvide = () => {
     };
     try {
       const res = await addSuplier(dataSend)
-      console.log(res.data);
+      console.log(res);
       dispatch(addNewSuplier(res.data));
       toast.success("Thêm thành công nhà cung cấp", {
         position: "bottom-right",
@@ -156,6 +156,19 @@ const CreateProvide = () => {
       });
       navigate("/suppliers");
     } catch (error) {
+      if(error?.response && error?.response?.data?.code == "3"){
+         toast.error("Thông tin bị trùng vui lòng thử lại", {
+           position: "bottom-right",
+           autoClose: 5000,
+           hideProgressBar: false,
+           closeOnClick: true,
+           pauseOnHover: true,
+           draggable: true,
+           progress: undefined,
+           theme: "light",
+         });
+         return
+      }
        toast.error("Lỗi sever vui lòng thử lại", {
          position: "bottom-right",
          autoClose: 5000,

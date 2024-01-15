@@ -104,6 +104,7 @@ padding: 1rem;
   font-size: 1.2rem;
   padding: 5px;
   margin-top: 0.5rem;
+  border: 1px solid black;
 }
 @media screen and (min-width: 1800px){
   .input1{

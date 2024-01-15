@@ -1,7 +1,5 @@
 import { userRequest } from "./requestMethod";
 
-
-
 export const deleteSuplier = async (id: number) => {
 
   try {
