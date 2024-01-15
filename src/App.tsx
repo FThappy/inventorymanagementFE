@@ -77,7 +77,10 @@ function App() {
                 <Route path="/change" element={<ChangeCost />} />
                 <Route path="/purchase_orders" element={<ImportItem />} />
                 <Route path="/stock_adjustments" element={<ExamItem />} />
-                <Route path="/order_suppliers" element={<OrderItem />} />
+                <Route
+                  path="/order_suppliers"
+                  element={<OrderItem open={open} />}
+                />
                 <Route path="/create_suppliers" element={<CreateProvide />} />
                 <Route
                   path="/supplier/:id"
