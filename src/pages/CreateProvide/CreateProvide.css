@@ -1,0 +1,125 @@
+.create-container{
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    margin: 0.5rem;
+    height: 45rem;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
+.titleContainer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.btnsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.exportFile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #d95087;
+  color: white;
+  border: none;
+  margin-right: 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  height: 2rem;
+  cursor: pointer;
+padding: 1rem;
+
+}
+.addSuplier {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0058f3;
+  color: white;
+  border: none;
+  margin-right: 10px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  height: 1.7rem;
+  padding: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.help {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #e8e9eb;
+  color: black;
+  border: none;
+  margin-right: 10px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  height: 1.7rem;
+  padding: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.title{
+  margin: 0;
+}
+.formContainer{
+  padding: 10px;
+  margin-left: 3rem;
+  margin-right: 0.5rem;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  row-gap : 2rem;
+}
+.inputContainer{
+  display: flex;
+  flex-direction: column;
+}
+.inputContainer1{
+  display: flex;
+  flex-direction: column;
+  grid-column: 1 / 4;
+}
+.input{
+  width: 25rem;
+  border: none;
+  font-size: 1.2rem;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #a3a3a3;
+  margin-top: 0.5rem;
+}
+.input1{
+  width: 82rem;
+  border: none;
+  font-size: 1.2rem;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #a3a3a3;
+  margin-top: 0.5rem;
+}
+.input2{
+  width: 82rem;
+  height: 10rem;
+  font-size: 1.2rem;
+  padding: 5px;
+  margin-top: 0.5rem;
+  border: 1px solid black;
+}
+@media screen and (min-width: 1800px){
+  .input1{
+  width: 98.5rem;
+  border: none;
+  font-size: 1.2rem;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #a3a3a3;
+  margin-top: 0.5rem;
+}
+.input2{
+  width: 98.5rem;
+  height: 10rem;
+  font-size: 1.2rem;
+  padding: 5px;
+  margin-top: 0.5rem;
+}
+}

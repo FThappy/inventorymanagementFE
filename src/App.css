@@ -1,0 +1,12 @@
+@import "./node_modules/react-toastify/dist/ReactToastify.css";
+
+.mainContainer{
+    flex: 8;
+}
+.mainContainer1{
+    width: 100rem;
+}
+.link {
+    text-decoration: none;
+    color: inherit;
+}
