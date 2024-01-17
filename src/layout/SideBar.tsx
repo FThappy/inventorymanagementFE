@@ -303,14 +303,6 @@ export default function SideBar({
                         />
                       </ListItemButton>
                     </Link>
-                    <Link to="/product_detail" className="link">
-                      <ListItemButton>
-                        <ListItemText
-                          primary="Chi tiết sản phẩm"
-                          sx={{ opacity: open ? 1 : 0, color: "white" }}
-                        />
-                      </ListItemButton>
-                    </Link>
                     <Link to="/variants" className="link">
                       <ListItemButton>
                         <ListItemText

@@ -12,7 +12,7 @@ import { updateSuplier } from "../../api/apiUpdateSuplier";
 import ListProduct from "../../components/ListProduct/ListProduct";
 
 type supilerProps = {
-  id: number ;
+  id: number;
   name: string;
   email: string;
   phone: string;
@@ -73,6 +73,27 @@ type dataProps = {
   createAt?: Date;
   updateAt?: Date;
 };
+type Images = {
+  id: number;
+  productId: string;
+  url: string;
+};
+type ProductProps = {
+  id: number;
+  productId: string;
+  productName: string;
+  quantity: number;
+  quantitySold: number;
+  cost: number;
+  color: string;
+  size: string;
+  status: string;
+  images: Images;
+  createAt: Date;
+  updateAt: Date;
+  distributor: string;
+  description: string;
+};
 type Props = {
   open: boolean;
 };
@@ -82,9 +103,7 @@ const Button = ({ type }: StatusProp) => {
   );
 };
 
-
-
-const ProvideDetail = ({open} : Props) => {
+const ProvideDetail = ({ open }: Props) => {
   const location = useLocation();
   const suplierId = location.pathname?.split("/")[2] || null;
 
@@ -249,6 +268,42 @@ const ProvideDetail = ({open} : Props) => {
       console.log(error);
     }
   };
+  const [product, setProduct] = useState<ProductProps[]>();
+  const [page, setPage] = useState(0);
+  const[totalPage,setTotalPage] = useState();
+    const handlePageChange = async (
+      event: React.ChangeEvent<HTMLInputElement>,
+      page: number,
+    ) => {
+      setPage(page - 1);
+    };
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const res = await userRequest.get("products/page_code", {
+          params: { page: page, code: suplier?.distributorCode },
+        });
+        setProduct(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getProduct();
+  }, [suplier?.distributorCode,page]);
+  useEffect(() => {
+    const getTolProduct = async () => {
+      try {
+        const res = await userRequest.get("products/totalpage_code", {
+          params: { code: suplier.distributorCode },
+        });
+         setTotalPage(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getTolProduct();
+  }, [suplier?.distributorCode]);
+
 
   return (
     <>
@@ -335,7 +390,13 @@ const ProvideDetail = ({open} : Props) => {
           </div>
         </div>
       </div>
-      <ListProduct open={open} />
+      <ListProduct
+        open={open}
+        product={product}
+        page={page}
+        totalPage={totalPage}
+        handleChange={handlePageChange}
+      />
       <form className="provide-container1">
         <div className="titleContainer">
           <h2 className="title">Chỉnh sửa thông tin nhà cung cấp :</h2>

@@ -6,21 +6,38 @@ import "./ListProduct.css";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import ButtonForProduct from "../ButtonForProduct/ButtonForProduct";
-type Props = {
-  open: boolean;
+import { DeleteOutline } from "@mui/icons-material";
+type Images = {
+  id: number;
+  productId: string;
+  url: string;
 };
 type ProductProps = {
-    id :number;
-    productId : string;
-    name :string;
-    url :string;
-    numInStock :number;
-    distributorId :string;
-    status :string;
-    cost : number;
-
-
-}
+  id: number;
+  productId: string;
+  productName: string;
+  quantity: number;
+  quantitySold: number;
+  cost: number;
+  color: string;
+  size: string;
+  status: string;
+  images: Images;
+  createAt: Date;
+  updateAt: Date;
+  distributor: string;
+  description: string;
+};
+type Props = {
+  open: boolean;
+  product: ProductProps;
+  totalPage: number;
+  handleChange: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    newPage: number,
+  ) => void;
+  page : number;
+};
 const fakeData = [
   {
     id: 1,
@@ -74,11 +91,9 @@ const fakeData = [
   },
 ];
 
-const ListProduct = ({ open }: Props) => {
+const ListProduct = ({ open,product,totalPage , handleChange,page }: Props) => {
 
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
-  const [page, setPage] = useState(0);
-
 
   useEffect(() => {
     const handleResize = () => {
@@ -112,7 +127,7 @@ const ListProduct = ({ open }: Props) => {
       renderCell: (params) => {
         return (
           <Grid container justifyContent="center" alignItems="center">
-            {params.id}
+            {params?.id}
           </Grid>
         );
       },
@@ -121,7 +136,7 @@ const ListProduct = ({ open }: Props) => {
       field: "productId",
       headerName: "Mã sản phẩm",
       // width: windowWidth < 1800 ? (open ? 250 : 300) : 250,
-      flex: 1,
+      flex: 0.8,
       cellClassName: "productListStock",
       headerClassName: "customHeader",
       headerAlign: "center",
@@ -135,7 +150,7 @@ const ListProduct = ({ open }: Props) => {
       renderCell: (params) => {
         return (
           <Link
-            to={"/supplier/" + params.row.id}
+            to={"/product_detail/" + params?.row?.id}
             className="link"
             style={{ width: "100%" }}
           >
@@ -147,7 +162,7 @@ const ListProduct = ({ open }: Props) => {
                   textAlign: "center",
                 }}
               >
-                {params.value}
+                {params?.value}
               </p>
             </Grid>
           </Link>
@@ -158,7 +173,7 @@ const ListProduct = ({ open }: Props) => {
       field: "product",
       headerName: "Sản phẩm",
       // width: windowWidth < 1800 ? (open ? 150 : 250) : 250,
-      flex: 1.2,
+      flex: 1.1,
       headerAlign: "center",
       headerClassName: "customHeader",
       renderHeader: () => (
@@ -172,8 +187,12 @@ const ListProduct = ({ open }: Props) => {
         return (
           <Grid container alignItems="center">
             <div className="productCon">
-              <img className="productListImg" src={params.row.url} alt="" />
-              {params.row.name}
+              <img
+                className="productListImg"
+                src={params?.row?.images[0]?.url}
+                alt=""
+              />
+              {params?.row?.productName}
             </div>
           </Grid>
         );
@@ -181,10 +200,10 @@ const ListProduct = ({ open }: Props) => {
     },
 
     {
-      field: "numInStock",
+      field: "quantity",
       headerName: "Số sản phẩm trong kho",
       // width: windowWidth < 1800 ? (open ? 200 : 250) : 200,
-      flex: 1,
+      flex: 0.5,
       cellClassName: "productNumStock",
       headerClassName: "customHeader",
       headerAlign: "center",
@@ -192,13 +211,65 @@ const ListProduct = ({ open }: Props) => {
         <strong
           style={{ fontWeight: "bold", fontSize: open ? "1rem" : "1.2rem" }}
         >
-          Số sản phẩm trong kho
+          Số lượng
         </strong>
       ),
       renderCell: (params) => {
         return (
           <Grid container justifyContent="center" alignItems="center">
-            {params.value}
+            {params?.value}
+          </Grid>
+        );
+      },
+    },
+    {
+      field: "color",
+      headerName: "Màu sắc",
+      // width: windowWidth < 1800 ? (open ? 200 : 250) : 200,
+      flex: 0.4,
+      cellClassName: "productNumStock",
+      headerClassName: "customHeader",
+      headerAlign: "center",
+      renderHeader: () => (
+        <strong
+          style={{ fontWeight: "bold", fontSize: open ? "1rem" : "1.2rem" }}
+        >
+          Màu sắc
+        </strong>
+      ),
+      renderCell: (params) => {
+        return (
+          <Grid container justifyContent="center" alignItems="center">
+            <div
+              className="color_order"
+              style={{
+                backgroundColor: params.value,
+                border: "1px solid black",
+              }}
+            ></div>
+          </Grid>
+        );
+      },
+    },
+    {
+      field: "size",
+      headerName: "Kích thước",
+      // width: windowWidth < 1800 ? (open ? 200 : 250) : 200,
+      flex: 0.35,
+      cellClassName: "productNumStock",
+      headerClassName: "customHeader",
+      headerAlign: "center",
+      renderHeader: () => (
+        <strong
+          style={{ fontWeight: "bold", fontSize: open ? "1rem" : "1.2rem" }}
+        >
+          Size
+        </strong>
+      ),
+      renderCell: (params) => {
+        return (
+          <Grid container justifyContent="center" alignItems="center">
+            {params?.value}
           </Grid>
         );
       },
@@ -224,7 +295,7 @@ const ListProduct = ({ open }: Props) => {
       renderCell: (params) => {
         return (
           <Grid container alignItems="center" sx={{ marginLeft: "2rem" }}>
-            {params.value.toLocaleString("it-IT", {
+            {params?.value?.toLocaleString("it-IT", {
               style: "currency",
               currency: "VND",
             })}
@@ -233,7 +304,7 @@ const ListProduct = ({ open }: Props) => {
       },
     },
     {
-      field: "distributorCode",
+      field: "distributor",
       headerName: "Mã nhà cung cấp",
       // width: windowWidth < 1800 ? (open ? 250 : 300) : 250,
       flex: 1.1,
@@ -250,7 +321,7 @@ const ListProduct = ({ open }: Props) => {
       renderCell: (params) => {
         return (
           <Link
-            to={"/supplier/" + params.row.id}
+            to={"/supplier/" + params?.row?.id}
             className="link"
             style={{ width: "100%" }}
           >
@@ -262,7 +333,7 @@ const ListProduct = ({ open }: Props) => {
                   textAlign: "center",
                 }}
               >
-                {params.value}
+                {params?.value}
               </p>
             </Grid>
           </Link>
@@ -290,7 +361,39 @@ const ListProduct = ({ open }: Props) => {
       renderCell: (params) => {
         return (
           <Grid container justifyContent="center" alignItems="center">
-            <ButtonForProduct type={params.value}/>
+            <ButtonForProduct type={params?.value} />
+          </Grid>
+        );
+      },
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      // width: windowWidth < 1800 ? 50 : 100,
+      flex: 0.5,
+      headerClassName: "customHeader",
+      headerAlign: "center",
+      renderHeader: () => (
+        <strong
+          style={{
+            fontWeight: "bold",
+            fontSize: open ? "1rem" : "1.2rem",
+          }}
+        >
+          Xóa
+        </strong>
+      ),
+      renderCell: () => {
+        return (
+          <Grid container justifyContent="center" alignItems="center">
+            <button
+              style={{ border: "none", background: "none" }}
+            >
+              <DeleteOutline
+                className="productListDelete"
+                sx={{ fontSize: "2.3rem", marginLeft: "0.5rem" }}
+              />
+            </button>
           </Grid>
         );
       },
@@ -301,11 +404,11 @@ const ListProduct = ({ open }: Props) => {
       <div className="containerSSS">
         <Stack spacing={2}>
           <Pagination
-            count={10}
+            count={totalPage}
             color="primary"
             page={page + 1}
             onChange={(event, newPage) =>
-              handlePageChange(
+              handleChange(
                 event as React.ChangeEvent<HTMLInputElement>,
                 newPage,
               )
@@ -315,27 +418,24 @@ const ListProduct = ({ open }: Props) => {
       </div>
     );
   }
-    const handlePageChange = async (
-      event: React.ChangeEvent<HTMLInputElement>,
-      page: number,
-    ) => {
-      setPage(page - 1);
-    };
+
 
   return (
     <div className="itemContainer">
-      <DataGrid
-        rows={fakeData}
-        disableRowSelectionOnClick
-        columns={columns}
-        slots={{
-          footer: CustomFooterStatusComponent,
-        }}
-        sx={{
-          height: windowWidth < 1800 ?370 : 400,
-          width: windowWidth < 1800 ? (open ? "78rem" : "100%") : "100%",
-        }}
-      />
+      {product && (
+        <DataGrid
+          rows={product}
+          disableRowSelectionOnClick
+          columns={columns}
+          slots={{
+            footer: CustomFooterStatusComponent,
+          }}
+          sx={{
+            height: windowWidth < 1800 ? 370 : 400,
+            width: windowWidth < 1800 ? (open ? "78rem" : "100%") : "100%",
+          }}
+        />
+      )}
     </div>
   );
 };

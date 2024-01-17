@@ -70,8 +70,8 @@ function App() {
                 <Route path="*" element={<Navigate to="/" />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/add_product" element={<AddProduct />} />
-                <Route path="/product_detail" element={<ProductDetail />} />
-                <Route path="/items" element={<ListItem />}></Route>
+                <Route path="/product_detail/:id" element={<ProductDetail />} />
+                <Route path="/items" element={<ListItem open={open} />}></Route>
                 <Route path="/suppliers" element={<Provide open={open} />} />
                 <Route path="/variants" element={<ManageWarehouse />} />
                 <Route path="/change" element={<ChangeCost />} />

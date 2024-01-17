@@ -11,11 +11,24 @@
   background-color: #e5faf2;
   color: #3bb077;
 }
+.statusProduct.available {
+  background-color: #e5faf2;
+  color: #3bb077;
+}
 .statusProduct.inactive {
   background-color: #fff0f1;
   color: #d95087;
 }
+.statusProduct.not_available {
+  background-color: #fff0f1;
+  color: #d95087;
+}
 .statusProduct.none {
+  background-color: #ebf1fe;
+  color: #2a7ade;
+}
+.statusProduct.not_still_in_existence
+ {
   background-color: #ebf1fe;
   color: #2a7ade;
 }
