@@ -11,9 +11,17 @@
   background-color: #e5faf2;
   color: #3bb077;
 }
+.statusProduct.approved {
+  background-color: #e5faf2;
+  color: #3bb077;
+}
 .statusProduct.available {
   background-color: #e5faf2;
   color: #3bb077;
+}
+.statusProduct.declined {
+  background-color: #fff0f1;
+  color: #d95087;
 }
 .statusProduct.inactive {
   background-color: #fff0f1;
@@ -23,9 +31,17 @@
   background-color: #fff0f1;
   color: #d95087;
 }
+.statusProduct.pending {
+  background-color: #ebf1fe;
+  color: #2a7ade;
+}
 .statusProduct.none {
   background-color: #ebf1fe;
   color: #2a7ade;
+}
+.statusProduct.wrong {
+  background-color: #FEC901;
+  color: white;
 }
 .statusProduct.not_still_in_existence
  {

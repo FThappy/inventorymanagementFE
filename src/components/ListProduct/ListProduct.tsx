@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DataGrid, GridColDef} from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Grid from "@mui/material/Grid";
 import { Link } from "react-router-dom";
 import "./ListProduct.css";
@@ -7,6 +7,9 @@ import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import ButtonForProduct from "../ButtonForProduct/ButtonForProduct";
 import { DeleteOutline } from "@mui/icons-material";
+import { toast } from "react-toastify";
+import { userRequest } from "../../api/requestMethod";
+
 type Images = {
   id: number;
   productId: string;
@@ -36,7 +39,8 @@ type Props = {
     event: React.ChangeEvent<HTMLInputElement>,
     newPage: number,
   ) => void;
-  page : number;
+  page: number;
+  setProduct: React.Dispatch<React.SetStateAction<ProductProps[]>>; // Add this line
 };
 const fakeData = [
   {
@@ -91,8 +95,14 @@ const fakeData = [
   },
 ];
 
-const ListProduct = ({ open,product,totalPage , handleChange,page }: Props) => {
-
+const ListProduct = ({
+  open,
+  product,
+  totalPage,
+  handleChange,
+  page,
+  setProduct,
+}: Props) => {
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
 
   useEffect(() => {
@@ -106,7 +116,6 @@ const ListProduct = ({ open,product,totalPage , handleChange,page }: Props) => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
 
   const columns: GridColDef<ProductProps>[] = [
     {
@@ -320,23 +329,17 @@ const ListProduct = ({ open,product,totalPage , handleChange,page }: Props) => {
       ),
       renderCell: (params) => {
         return (
-          <Link
-            to={"/supplier/" + params?.row?.id}
-            className="link"
-            style={{ width: "100%" }}
-          >
-            <Grid container justifyContent="center" alignItems="center">
-              <p
-                style={{
-                  color: "#00b4d8",
-                  cursor: "pointer",
-                  textAlign: "center",
-                }}
-              >
-                {params?.value}
-              </p>
-            </Grid>
-          </Link>
+          <Grid container justifyContent="center" alignItems="center">
+            <p
+              style={{
+                color: "#00b4d8",
+                cursor: "pointer",
+                textAlign: "center",
+              }}
+            >
+              {params?.value}
+            </p>
+          </Grid>
         );
       },
     },
@@ -383,11 +386,12 @@ const ListProduct = ({ open,product,totalPage , handleChange,page }: Props) => {
           Xóa
         </strong>
       ),
-      renderCell: () => {
+      renderCell: (params) => {
         return (
           <Grid container justifyContent="center" alignItems="center">
             <button
               style={{ border: "none", background: "none" }}
+              onClick={(e) => handleDelete(e, params.row.productId)}
             >
               <DeleteOutline
                 className="productListDelete"
@@ -418,7 +422,40 @@ const ListProduct = ({ open,product,totalPage , handleChange,page }: Props) => {
       </div>
     );
   }
+  const handleDelete = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    code: string,
+  ) => {
+    e.preventDefault();
+    try {
+      await userRequest.delete("products/" + code);
+    setProduct((prevProduct) =>
+      prevProduct.filter((item) => item.productId !== code),
+    );
 
+      toast.success("Xóa thành công sản phẩm", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } catch (error) {
+      toast.error("Lỗi sever vui lòng thử lại", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  };
 
   return (
     <div className="itemContainer">

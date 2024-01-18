@@ -86,6 +86,7 @@ const ListItem = ({ open }: Props) => {
       <ListProduct
         open={open}
         product={product}
+        setProduct={setProduct}
         page={page}
         totalPage={totalPage}
         handleChange={handlePageChange}

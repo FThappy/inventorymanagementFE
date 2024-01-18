@@ -1,0 +1,63 @@
+.browserContainer {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  margin: 0.5rem;
+  height: 45rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+.browser_titContainer {
+  display: flex;
+  justify-content: space-between;
+}
+.browser_title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.browser_info {
+  font-size: 1.5rem;
+  margin-left: 0.5rem;
+  color: #00b4d8;
+}
+.btnstatusApproved {
+  border: none;
+  border-radius: 0.8rem;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 12rem;
+  background-color: #e5faf2;
+  color: #3bb077;
+  margin-left: 2rem;
+}
+.statusDeclined {
+  border: none;
+  border-radius: 0.8rem;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 9rem;
+  background-color: #fff0f1;
+  color: #d95087;
+  margin-left: 2rem;
+}
+.statusWrong {
+  border: none;
+  border-radius: 0.8rem;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 9rem;
+  background-color: #fec901;
+  color: white;
+  margin-left: 2rem;
+}
+.browser_btnContainer {
+  display: flex;
+  margin-top: 1rem;
+}
+.infor_trans {
+  margin-left: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 0;
+}

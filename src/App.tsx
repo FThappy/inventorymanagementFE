@@ -13,7 +13,7 @@ import TopBar from "./layout/TopBar";
 import { CssBaseline, styled } from "@mui/material";
 import Home from "./pages/Home/Home";
 import ListItem from "./pages/ListItem/ListItem";
-import ImportItem from "./pages/ImportItem/ImportItem";
+import ImportItem from "./pages/ImportItem/Browser";
 import ManageWarehouse from "./pages/ManageWarehouse/ManageWarehouse";
 import ChangeCost from "./pages/ChangeCost/ChangeCost";
 import OrderItem from "./pages/OrderItem/OrderItem";
@@ -26,6 +26,8 @@ import ProductDetail from "./pages/ProductDetail/ProductDetail";
 import AddProduct from "./pages/AddProduct/AddProduct";
 import ProvideDetail from "./pages/ProvideDetail/ProvideDetail";
 import CreateProvide from "./pages/CreateProvide/CreateProvide";
+import Browser from "./pages/ImportItem/Browser";
+import UpdateProduct from "./pages/UpdateProduct/UpdateProduct";
 
 type currentUserProps = {
   username: string;
@@ -70,13 +72,18 @@ function App() {
                 <Route path="*" element={<Navigate to="/" />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/add_product" element={<AddProduct />} />
+                <Route path="/update_product/:code" element={<UpdateProduct />} />
                 <Route path="/product_detail/:id" element={<ProductDetail />} />
                 <Route path="/items" element={<ListItem open={open} />}></Route>
                 <Route path="/suppliers" element={<Provide open={open} />} />
                 <Route path="/variants" element={<ManageWarehouse />} />
                 <Route path="/change" element={<ChangeCost />} />
                 <Route path="/purchase_orders" element={<ImportItem />} />
-                <Route path="/stock_adjustments" element={<ExamItem />} />
+                <Route
+                  path="/stock_adjustments"
+                  element={<ExamItem open={open} />}
+                />
+                <Route path="/stock_adjustments/:id" element={<Browser />} />
                 <Route
                   path="/order_suppliers"
                   element={<OrderItem open={open} />}

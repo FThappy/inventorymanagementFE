@@ -73,27 +73,7 @@ type dataProps = {
   createAt?: Date;
   updateAt?: Date;
 };
-type Images = {
-  id: number;
-  productId: string;
-  url: string;
-};
-type ProductProps = {
-  id: number;
-  productId: string;
-  productName: string;
-  quantity: number;
-  quantitySold: number;
-  cost: number;
-  color: string;
-  size: string;
-  status: string;
-  images: Images;
-  createAt: Date;
-  updateAt: Date;
-  distributor: string;
-  description: string;
-};
+
 type Props = {
   open: boolean;
 };
@@ -396,6 +376,7 @@ const ProvideDetail = ({ open }: Props) => {
         page={page}
         totalPage={totalPage}
         handleChange={handlePageChange}
+        setProduct={setProduct}
       />
       <form className="provide-container1">
         <div className="titleContainer">

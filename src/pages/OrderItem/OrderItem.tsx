@@ -12,6 +12,8 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { userRequest } from "../../api/requestMethod";
 import { DeleteOutline } from "@mui/icons-material";
+import { toast } from "react-toastify";
+
 type supilerProps = {
   id: number;
   name: string;
@@ -153,7 +155,7 @@ const OrderItem = ({ open }: Props) => {
       renderCell: (params) => {
         return (
           <Link
-            to={"/supplier/" + params?.row?.id}
+            to={"/product_detail/" + params?.row?.id}
             className="link"
             style={{ width: "100%" }}
           >
@@ -323,23 +325,17 @@ const OrderItem = ({ open }: Props) => {
       ),
       renderCell: (params) => {
         return (
-          <Link
-            to={"/supplier/" + params?.row?.id}
-            className="link"
-            style={{ width: "100%" }}
-          >
-            <Grid container justifyContent="center" alignItems="center">
-              <p
-                style={{
-                  color: "#00b4d8",
-                  cursor: "pointer",
-                  textAlign: "center",
-                }}
-              >
-                {params?.value}
-              </p>
-            </Grid>
-          </Link>
+          <Grid container justifyContent="center" alignItems="center">
+            <p
+              style={{
+                color: "#00b4d8",
+                cursor: "pointer",
+                textAlign: "center",
+              }}
+            >
+              {params?.value}
+            </p>
+          </Grid>
         );
       },
     },
@@ -417,17 +413,20 @@ const OrderItem = ({ open }: Props) => {
   const handlePut = (params) => {
     setProduct((prevProducts) => {
       const updatedProducts = [...prevProducts];
-      updatedProducts[params.id - 1].pick = true;
-      updatedProducts[params.id - 1].number = 1;
+      updatedProducts[updatedProducts?.findIndex((item)=>item.id == params.id)].pick = true;
+      updatedProducts[updatedProducts?.findIndex((item)=>item.id == params.id)].number = 1;
+
       return updatedProducts;
     });
-    setInputs((prev) => [...prev, product[params.id - 1]]);
+    // console.log(product[product?.findIndex((item)=>item.id == params.id)]);
+    setInputs((prev) => [...prev, product[product?.findIndex((item)=>item.id == params.id)]]);
   };
+  console.log(inputs);
 
   const handleDiscard = (params) => {
     setProduct((prevProducts) => {
       const updatedProducts = [...prevProducts];
-      updatedProducts[params.id - 1].pick = false;
+      updatedProducts[updatedProducts?.findIndex((item)=>item.id == params.id)].pick = false;
       return updatedProducts;
     });
     setInputs((prev) => prev.filter((item) => item.id !== params.id));
@@ -452,37 +451,90 @@ const OrderItem = ({ open }: Props) => {
       </div>
     );
   }
-const handleIn = (item) => {
-  setInputs((prevProducts) => {
-    const updatedProducts = prevProducts.map((product) => {
-      if (product.id === item.id && product.number < product.quantity) {
-        return {
-          ...product,
-          number: product.number + 1,
-        };
-      }
-      return product; 
+  const handleIn = (item) => {
+    setInputs((prevProducts) => {
+      const updatedProducts = prevProducts.map((product) => {
+        if (product.id === item.id && product.number < product.quantity) {
+          return {
+            ...product,
+            number: product.number + 1,
+          };
+        }
+        return product;
+      });
+      return updatedProducts;
     });
-    return updatedProducts;
-  });
-};
+  };
 
-const handleDe = (item) => {
-  setInputs((prevProducts) => {
-    const updatedProducts = prevProducts.map((product) => {
-      if (product.id === item.id && product.number > 1) {
-        return {
-          ...product,
-          number: product.number - 1,
-        };
-      }
-      return product; 
+  const handleDe = (item) => {
+    setInputs((prevProducts) => {
+      const updatedProducts = prevProducts.map((product) => {
+        if (product.id === item.id && product.number > 1) {
+          return {
+            ...product,
+            number: product.number - 1,
+          };
+        }
+        return product;
+      });
+      return updatedProducts;
     });
-    return updatedProducts;
-  });
-};
-
-
+  };
+  const handleSubmit = async () => {
+    if (inputs.length <= 0) {
+      toast.warning("Vui lòng chọn sản phẩm", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
+    }
+    const dataSend = {
+      transcationId:
+        "TRANSC" + Math.floor(Math.random() * (999999 - 100000 + 1) + 100000),
+      product: inputs?.map((item) => ({
+        productId: item.productId,
+        number: item.number,
+      })),
+      distributorCode: suplier,
+      totalCost: inputs?.reduce(
+        (accumulator, currentValue) =>
+          accumulator + currentValue?.number * currentValue?.cost,
+        0,
+      ),
+    };
+    console.log(dataSend);
+    try {
+      const res = await userRequest.post("transcation/", dataSend);
+      toast.success("Thành công", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } catch (error) {
+      toast.error("Lỗi sever vui lòng thử lại", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      console.log(error);
+    }
+  };
 
   return (
     <div className="orderContainer">
@@ -621,7 +673,9 @@ const handleDe = (item) => {
                       })}
                 </p>
               </div>
-              <button className="acceptBtn">Đặt đơn</button>
+              <button className="acceptBtn" onClick={handleSubmit}>
+                Đặt đơn
+              </button>
             </div>
           </div>
         </div>
