@@ -10,6 +10,7 @@ type supilerProps = {
   distributorCode: string;
   address: string;
   payment: string;
+  paymentCard: string;
   status: string;
   web: string;
   description: string;

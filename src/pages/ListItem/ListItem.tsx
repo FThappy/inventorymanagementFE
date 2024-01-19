@@ -1,212 +1,113 @@
 import { FaCheck } from "react-icons/fa";
 import { IoIosAdd } from "react-icons/io";
-import { BsSearch } from "react-icons/bs";
-import { RiArrowDropDownLine, RiArrowRightDoubleLine } from "react-icons/ri";
-import { MdKeyboardDoubleArrowDown } from "react-icons/md";
-import { BiSend } from "react-icons/bi";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import './ListItem.css';
-
-const ListItem = () => {
+import { userRequest } from "../../api/requestMethod";
+import ListProduct from "../../components/ListProduct/ListProduct";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { current } from "@reduxjs/toolkit";
+type Props = {
+  open: boolean;
+};
+type Images = {
+  id: number;
+  productId: string;
+  url: string;
+};
+type ProductProps = {
+  id: number;
+  productId: string;
+  productName: string;
+  quantity: number;
+  quantitySold: number;
+  cost: number;
+  color: string;
+  size: string;
+  status: string;
+  images: Images;
+  createAt: Date;
+  updateAt: Date;
+  distributor: string;
+  description: string;
+};
+type currentUserProps = {
+  username: string;
+  email: string;
+  role: string;
+  access_token: string;
+  refresh_token: string;
+};
+const ListItem = ({ open }: Props) => {
+  const [product, setProduct] = useState<ProductProps[]>();
+  const [page, setPage] = useState(0);
+  const [totalPage, setTotalPage] = useState<number>();
+  const handlePageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    page: number,
+  ) => {
+    setPage(page - 1);
+  };
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const res = await userRequest.get("products/page", {
+          params: { page: page },
+        });
+        setProduct(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getProduct();
+  }, [page]);
+  useEffect(() => {
+    const getTolProduct = async () => {
+      try {
+        const res = await userRequest.get("products/totalpage");
+        setTotalPage(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getTolProduct();
+  }, []);
+      const currentUser: currentUserProps | null = useSelector(
+        (state: RootState) => state?.currentUser?.currentUser,
+      );
   return (
-    <div className="itemContainer font-sans item_main">
-      <div className="flex-row mx-1">
-        <div className="py-4 px-2.5 w-fit float-left">
+    <div>
+      <div className="mx-1 flex-row">
+        <div className="float-left m-1 w-fit px-2.5 py-4">
           <div className="flex flex-row">
-            <div className="pr-2.5 pl-3 text-green-600 pt-1"><FaCheck /></div>
+            <div className="pl-3 pr-2.5 pt-1 text-green-600">
+              <FaCheck />
+            </div>
             {/* <div className=''>afjh</div> */}
-            <div className='text-lg pr-4'> Tất cả sản phẩm</div>
+            <div className="pr-4 text-lg"> Tất cả sản phẩm</div>
           </div>
           <div className="border-b-[3px] border-b-zinc-950"></div>
         </div>
-        <div className="text-lg bg-[#33A0FF] w-fit text-white flex flex-row h-[40px] float-right">
-          <IoIosAdd className="text-2xl mt-2 ml-1" />
-          <p className="pt-1.5 pr-3">Thêm sản phẩm</p>
-        </div>
-      </div>
-
-      <div className="flex flex-row mt-[65px] ml-3 opacity-[60%] w-full">
-        <div className="flex flex-row rounded-md border-2 border-slate-600 w-[55%]">
-          <BsSearch className="mt-3 mx-2" />
-          <p className=" opacity-[60%] my-2">Tìm kiếm theo mã sản phẩm, tên sản phẩm, barcode</p>
-        </div>
-        <div className="ml-16 w-[15%] opacity-[60%]">
-          <div className="flex flex-row rounded-md border-2 border-black justify-between">
-            <p className=" my-2 ml-3">Loại sản phẩm</p>
-            <RiArrowDropDownLine className="mt-1.5 text-3xl" />
+        {!(currentUser.role === "COORDINATOR") && (
+          <div className="float-right m-4 flex h-[40px] w-fit cursor-pointer flex-row bg-[#33A0FF] text-lg text-white">
+            <Link to={"/add_product"} className="link flex">
+              <IoIosAdd className="ml-1 mt-2 text-2xl" />
+              <p className="pr-3 pt-1.5">Thêm sản phẩm</p>
+            </Link>
           </div>
-        </div>
-        <div className="ml-5 w-[13%] opacity-[60%]">
-          <div className="flex flex-row rounded-md border-2 border-black  justify-between">
-            <p className="my-2 ml-3">Ngày tạo</p>
-            <RiArrowDropDownLine className="mt-1.5 ml-2 text-3xl" />
-          </div>
-        </div>
-        <div className="ml-5 w-[13%] opacity-[60%]">
-          <div className="flex flex-row rounded-md border-2 border-black  justify-between">
-            <p className="my-2 ml-3">Nhãn hiệu</p>
-            <RiArrowDropDownLine className="mt-1.5 ml-2 text-3xl" />
-          </div>
-        </div>
-        <BiSend className="ml-7 mr-10 mt-2 text-3xl " />
+        )}
       </div>
-
-      <div className="flex flex-row bg-[#D9D9D957] h-[46px] mt-5 justify-between">
-        <div className="rounded-full w-4 h-4 border-2 border-slate-500 mt-4 ml-12"></div>
-        <div className="ml-[55px] mt-3">Ảnh</div>
-        <div className="ml-[88px] mt-3">Sản phẩm</div>
-        <div className="ml-[267px] mt-3">Nhãn hiệu</div>
-        <div className="ml-[61px] mt-3">Có thể bán</div>
-        <div className="ml-[55px] mt-3">Tồn kho</div>
-        <div className="ml-[61px] mt-3 mr-14">Ngày khởi tạo</div>
-      </div>
-
-      <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[46px] justify-between mt-1">
-        <RiArrowRightDoubleLine className="mt-2 text-xl ml-6 mr-3" />
-        <span className="rounded-full w-4 h-4 border-2 border-slate-500 mt-3 -ml-10"></span>
-        <div className="mt-0.5 ml-5">
-          <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
-        </div>
-        <div className="ml-[64px] mt-2">Quần jeans nữ</div>
-        <div className="ml-[267px] mt-2">Quần</div>
-        <div className="ml-[103px] mt-2">243</div>
-        <div className="ml-[88px] mt-2">243</div>
-        <div className="ml-[76px] mt-2 mr-16">20/12/2023</div>
-      </div>
-
-      <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[46px] justify-between mt-1">
-        <RiArrowRightDoubleLine className="mt-2 text-xl ml-6 mr-3" />
-        <span className="rounded-full w-4 h-4 border-2 border-slate-500 mt-3 -ml-10"></span>
-        <div className="mt-0.5 ml-5">
-          <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
-        </div>
-        <div className="ml-[64px] mt-2">Quần jeans nữ</div>
-        <div className="ml-[267px] mt-2">Quần</div>
-        <div className="ml-[103px] mt-2">243</div>
-        <div className="ml-[88px] mt-2">243</div>
-        <div className="ml-[76px] mt-2 mr-16">20/12/2023</div>
-      </div>
-
-      <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[46px] justify-between mt-1">
-        <RiArrowRightDoubleLine className="mt-2 text-xl ml-6 mr-3" />
-        <span className="rounded-full w-4 h-4 border-2 border-slate-500 mt-3 -ml-10"></span>
-        <div className="mt-0.5 ml-5">
-          <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
-        </div>
-        <div className="ml-[64px] mt-2">Quần jeans nữ</div>
-        <div className="ml-[267px] mt-2">Quần</div>
-        <div className="ml-[103px] mt-2">243</div>
-        <div className="ml-[88px] mt-2">243</div>
-        <div className="ml-[76px] mt-2 mr-16">20/12/2023</div>
-      </div>
-
-      <div className="h-[383px] bg-[#fbf8f8] justify-between">
-        <div className="flex flex-row justify-between">
-          <MdKeyboardDoubleArrowDown className="mt-2 text-xl ml-6 text-[#33A0FF] mr-3" />
-          <span className="rounded-full w-4 h-4 border-2 border-slate-500 mt-3 -ml-10"></span>
-          <div className="mt-0.5 ml-5">
-            <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
-          </div>
-          <div className="ml-[64px] mt-2">Quần jeans nữ</div>
-          <div className="ml-[267px] mt-2">Quần</div>
-          <div className="ml-[103px] mt-2">243</div>
-          <div className="ml-[88px] mt-2">243</div>
-          <div className="ml-[76px] mt-2 mr-16">20/12/2023</div>
-        </div>
-
-        <div className="detail">
-          <div className="w-11/12 h-[303px] m-auto mt-1 rounded border-[1px] border-black bg-white overflow-y-auto">
-            <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[46px] justify-between mt-1 font-medium">
-              <div className="ml-48 mt-2">Phiên bản</div>
-              <div className="ml-[425px] mt-2">Có thể bán</div>
-              <div className="ml-[50px] mt-2">Tồn kho</div>
-              <div className="ml-[71px] mt-2 mr-24">Giá nhập</div>
-            </div>
-
-            <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[50px] justify-between mt-1">
-              <div className="mt-0.5 ml-16">
-                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
-              </div>
-              <div className="-ml-2 ">
-                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                <p className="text-sm">ao_01-M-X-V</p>
-              </div>
-              <div className="ml-[356px] mt-2">243</div>
-              <div className="ml-[104px] mt-2">243</div>
-              <div className="ml-[84px] mt-2 mr-24">100,000</div>
-            </div>
-
-            <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[50px] justify-between mt-1">
-              <div className="mt-0.5 ml-16">
-                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
-              </div>
-              <div className="-ml-2 ">
-                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                <p className="text-sm">ao_01-M-X-V</p>
-              </div>
-              <div className="ml-[356px] mt-2">243</div>
-              <div className="ml-[104px] mt-2">243</div>
-              <div className="ml-[84px] mt-2 mr-24">100,000</div>
-            </div>
-
-            <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[50px] justify-between mt-1">
-              <div className="mt-0.5 ml-16">
-                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
-              </div>
-              <div className="-ml-2 ">
-                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                <p className="text-sm">ao_01-M-X-V</p>
-              </div>
-              <div className="ml-[356px] mt-2">243</div>
-              <div className="ml-[104px] mt-2">243</div>
-              <div className="ml-[84px] mt-2 mr-24">100,000</div>
-            </div>
-
-            <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[50px] justify-between mt-1">
-              <div className="mt-0.5 ml-16">
-                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
-              </div>
-              <div className="-ml-2 ">
-                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                <p className="text-sm">ao_01-M-X-V</p>
-              </div>
-              <div className="ml-[356px] mt-2">243</div>
-              <div className="ml-[104px] mt-2">243</div>
-              <div className="ml-[84px] mt-2 mr-24">100,000</div>
-            </div>
-
-            <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[50px] justify-between mt-1">
-              <div className="mt-0.5 ml-16">
-                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
-              </div>
-              <div className="-ml-2 ">
-                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                <p className="text-sm">ao_01-M-X-V</p>
-              </div>
-              <div className="ml-[356px] mt-2">243</div>
-              <div className="ml-[104px] mt-2">243</div>
-              <div className="ml-[84px] mt-2 mr-24">100,000</div>
-            </div>
-
-            <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[50px] justify-between mt-1">
-              <div className="mt-0.5 ml-16">
-                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[43px] h-[39px]" />
-              </div>
-              <div className="-ml-2 ">
-                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                <p className="text-sm">ao_01-M-X-V</p>
-              </div>
-              <div className="ml-[356px] mt-2">243</div>
-              <div className="ml-[104px] mt-2">243</div>
-              <div className="ml-[84px] mt-2 mr-24">100,000</div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
+      <ListProduct
+        open={open}
+        product={product}
+        setProduct={setProduct}
+        page={page}
+        totalPage={totalPage}
+        handleChange={handlePageChange}
+      />
     </div>
   );
-}
+};
 
 export default ListItem

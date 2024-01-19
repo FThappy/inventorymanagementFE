@@ -6,8 +6,9 @@ import { toast } from "react-toastify";
 import { checkValidGmail } from "../../utils/checkValidGmail";
 import { checkValidPhoneNumber } from "../../utils/checkValidPhoneNumber";
 import { addSuplier } from "../../api/apiAddSuplier";
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { addNewSuplier } from "../../redux/distributor";
+import { checkValidCard } from "../../utils/checkValidPaymentCard";
 
 type ward = {
   name: string;
@@ -39,6 +40,7 @@ type input = {
   address?: string;
   distributorCode?: string;
   payment?: string;
+  paymentCard?: string;
   web?: string;
 };
 
@@ -51,10 +53,10 @@ const CreateProvide = () => {
   const [inputs, setInputs] = useState<input>({});
   const [description, setDescription] = useState<string>();
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     setInputs((inputs) => {
       return {
@@ -67,7 +69,7 @@ const CreateProvide = () => {
     const getProvine = async () => {
       try {
         const res = await axios.get(
-          "https://provinces.open-api.vn/api/?depth=3"
+          "https://provinces.open-api.vn/api/?depth=3",
         );
         setProvine(res.data);
       } catch (error) {
@@ -102,8 +104,21 @@ const CreateProvide = () => {
       });
       return;
     }
-    if (!checkValidGmail(inputs.email)) {
-      toast.error("Mail bị sai vui lòng nhập lại", {
+    if (inputs.paymentCard &&!checkValidCard(inputs.paymentCard)) {
+      toast.error("Mã thẻ không hợp lệ vui lòng nhập lại", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
+    }
+    if (!checkValidPhoneNumber(inputs.phone)) {
+      toast.error("SĐT không chính xác vui lòng nhập lại", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -134,14 +149,14 @@ const CreateProvide = () => {
       phone: inputs.phone,
       address: `${city}, ${district}, ${ward}, ${inputs.address}`,
       distributorCode: inputs.distributorCode,
-      payment : inputs.payment,
-      description : description,
-      web : inputs.web,
-      createAt : new Date(),
-      updateAt : new Date()
+      payment: inputs.payment,
+      description: description,
+      web: inputs.web,
+      createAt: new Date(),
+      updateAt: new Date(),
     };
     try {
-      const res = await addSuplier(dataSend)
+      const res = await addSuplier(dataSend);
       console.log(res);
       dispatch(addNewSuplier(res.data));
       toast.success("Thêm thành công nhà cung cấp", {
@@ -156,30 +171,30 @@ const CreateProvide = () => {
       });
       navigate("/suppliers");
     } catch (error) {
-      if(error?.response && error?.response?.data?.code == "3"){
-         toast.error("Thông tin bị trùng vui lòng thử lại", {
-           position: "bottom-right",
-           autoClose: 5000,
-           hideProgressBar: false,
-           closeOnClick: true,
-           pauseOnHover: true,
-           draggable: true,
-           progress: undefined,
-           theme: "light",
-         });
-         return
+      if (error?.response && error?.response?.data?.code == "3") {
+        toast.error("Thông tin bị trùng vui lòng thử lại", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        return;
       }
-       toast.error("Lỗi sever vui lòng thử lại", {
-         position: "bottom-right",
-         autoClose: 5000,
-         hideProgressBar: false,
-         closeOnClick: true,
-         pauseOnHover: true,
-         draggable: true,
-         progress: undefined,
-         theme: "light",
-       });
-       console.log(error);
+      toast.error("Lỗi sever vui lòng thử lại", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      console.log(error);
     }
   };
 
@@ -353,6 +368,7 @@ const CreateProvide = () => {
             <option value="Banking">Banking</option>
           </select>
         </div>
+
         <div className="inputContainer">
           <label htmlFor="web">
             Địa chỉ Website nhà cung cấp<span style={{ color: "red" }}>* </span>
@@ -364,6 +380,17 @@ const CreateProvide = () => {
             type="text"
             placeholder="Địa chỉ Website nhà cung cấp"
             className="input"
+            onChange={handleChange}
+          />
+        </div>
+        <div className="inputContainer1">
+          <label htmlFor="paymentCard">Thẻ thanh toán(nếu có):</label>
+          <input
+            name="paymentCard"
+            id="paymentCard"
+            type="text"
+            placeholder="Địa chỉ cụ thể nhà cung cấp"
+            className="input1"
             onChange={handleChange}
           />
         </div>

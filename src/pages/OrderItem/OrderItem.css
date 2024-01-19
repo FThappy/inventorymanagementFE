@@ -87,6 +87,7 @@
     display: flex;
     width: 98%;
     padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
     border-bottom: 2px solid #e8e9eb;
 }
 .order_cart_left_detail_container{
@@ -102,7 +103,7 @@
 .order_cart_left_quantity{
     display: flex;
     align-items: center;
-    font-size: 2rem;
+    font-size: 1.2rem;
     color:#f44336;
 }
 .order_cart_left_cost{

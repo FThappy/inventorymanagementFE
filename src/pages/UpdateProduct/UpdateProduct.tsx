@@ -1,9 +1,49 @@
-import "./AddProduct.css";
-import React, { useState } from "react";
+import "./UpdateProduct.css";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { userRequest } from "../../api/requestMethod";
+import { useLocation, useNavigate } from "react-router";
+type Images = {
+  id: number;
+  productId: string;
+  url: string;
+};
+type ProductProps = {
+  id: number;
+  productId: string;
+  productName: string;
+  quantity: number;
+  quantitySold: number;
+  cost: number;
+  color: string;
+  size: string;
+  status: string;
+  images: Images;
+  createAt: Date;
+  updateAt: Date;
+  distributor: string;
+  description: string;
+};
+const UpdateProduct = () => {
+  const location = useLocation();
+  const productId = location.pathname?.split("/")[2] || null;
+  const [product, setProdcut] = useState<ProductProps>();
 
-const ItemDetail = () => {
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const getProductById = async () => {
+      try {
+        const res = await userRequest.get("products/" + productId);
+        setProdcut(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getProductById();
+  }, [productId]);
+
   const [fileUrl, setFileUrl] = useState<string[]>();
   const [files, setFiles] = useState<File[]>([]);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,48 +83,59 @@ const ItemDetail = () => {
   const [size, setSize] = useState<string>();
   const [color, setColor] = useState<string>();
   const [quantity, setQuantity] = useState<number>();
+  const [quantitySold, setQuantitySold] = useState<number>();
 
   const handleAdd = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (
-      !name ||
-      !productCode ||
-      !supplierCode ||
-      !description ||
-      !cost ||
-      !size ||
-      !color ||
-      !quantity
-    ) {
-      toast.error("Điền đầy đủ các thông tin", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-      return;
-    }
     const formData = new FormData();
     // Thêm thông tin sản phẩm vào FormData
-    formData.append("productName", name);
-    formData.append("productId", productCode);
-    formData.append("distributor_code", supplierCode);
-    formData.append("description", description);
-    formData.append("cost", String(cost || 0)); // Chuyển giá trị cost thành chuỗi
-    formData.append("size", size);
-    formData.append("color", color);
-    formData.append("quantity", String(quantity || 0));
-
+    if (!name) {
+      formData.append("productName", product.productName);
+    } else {
+      formData.append("productName", name);
+    }
+    if (!supplierCode) {
+      formData.append("distributor_code", product?.distributor);
+    } else {
+      formData.append("distributor_code", supplierCode);
+    }
+    if (!cost) {
+      formData.append("cost", String(product.cost || 0));
+    } else {
+      formData.append("cost", String(cost || 0));
+    }
+    if (!description) {
+      formData.append("description", product.description);
+    } else {
+      formData.append("description", description);
+    }
+    if (!size) {
+      formData.append("size", product.size);
+    } else {
+      formData.append("size", size);
+    }
+    if (!color) {
+      formData.append("color", product.color);
+    } else {
+      formData.append("color", color);
+    }
+    if (!quantity) {
+      formData.append("quantity", String(product.quantity || 0));
+    } else {
+      formData.append("quantity", String(quantity || 0));
+    }
+    if (quantitySold) {
+      formData.append("quantitySold", String(quantitySold || 0));
+    }
     // Thêm file ảnh vào FormData
     files.forEach((file) => {
       formData.append(`imageFiles`, file);
     });
     try {
-      const res = await userRequest.post("products/", formData);
+      const res = await userRequest.put(
+        "products/" + product.productId,
+        formData,
+      );
       toast.success("Thành công", {
         position: "bottom-right",
         autoClose: 5000,
@@ -95,10 +146,11 @@ const ItemDetail = () => {
         progress: undefined,
         theme: "light",
       });
+      navigate("/product_detail/" + product.id);
       console.log(res.data);
     } catch (error) {
       if (error.response.data.code == 2) {
-        toast.error("Mã sản phẩm đã tồn tại", {
+        toast.error("Mã sản phẩm không tồn tại", {
           position: "bottom-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -143,7 +195,9 @@ const ItemDetail = () => {
         <div className="w-[55%]">
           <div className="mr-10 h-[440px] bg-white">
             <div className="h-[40px] border-b-2 border-b-[#D9D9D957]">
-              <p className="px-5 pt-2  font-bold">Thông tin chung</p>
+              <p className="px-5 pt-2  font-bold">
+                Thông tin chung của sản phẩm : {product?.productId}
+              </p>
             </div>
             <div className="mx-14 mt-2">
               <form action="">
@@ -153,25 +207,13 @@ const ItemDetail = () => {
                 <input
                   type="text"
                   id="ten_sp"
-                  placeholder="Nhập tên sản phẩm"
+                  placeholder={product?.productName}
                   className="mt-1 w-full rounded border-[1px] border-slate-500 p-1"
                   required
                   onChange={(e) => setName(e.target.value)}
                 />
                 <div className="flex">
                   <div className="mt-2 w-full">
-                    <label htmlFor="ma_sp" className="flex">
-                      Mã sản phẩm / SKU
-                      <p className="text-red-600">&nbsp;*</p>
-                    </label>
-                    <input
-                      type="text"
-                      id="ma_sp"
-                      placeholder="Nhập mã sản phẩm / SKU"
-                      className="mt-1 w-full rounded border-[1px] border-slate-500 p-1"
-                      required
-                      onChange={(e) => setProductCode(e.target.value)}
-                    />
                     <label htmlFor="ma_sp" className="mt-2 flex">
                       Mã nhà cung cấp
                       <p className="text-red-600">&nbsp;*</p>
@@ -179,7 +221,7 @@ const ItemDetail = () => {
                     <input
                       type="text"
                       id="ma_sp"
-                      placeholder="Mã nhà cung cấp"
+                      placeholder={product?.distributor}
                       className="mt-1 w-full rounded border-[1px] border-slate-500 p-1"
                       required
                       onChange={(e) => setSupplierCode(e.target.value)}
@@ -192,8 +234,7 @@ const ItemDetail = () => {
                 <textarea
                   name="mo_ta"
                   id="mo_ta"
-                  placeholder="Nhập mô tả ( Tối đa 200 ký tự )"
-                  maxLength={200}
+                  placeholder={product?.description}
                   className="mt-1 w-full rounded border-[1px] border-slate-500 p-1 pb-[80px]"
                   required
                   onChange={(e) => setDescription(e.target.value)}
@@ -217,6 +258,10 @@ const ItemDetail = () => {
                   id="gia_le"
                   className="mt-1 w-full rounded border-[1px] border-slate-500 p-1"
                   onChange={(e) => setCost(parseInt(e.target.value, 10))}
+                  placeholder={product?.cost.toLocaleString("it-IT", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
                 />
               </form>
             </div>
@@ -237,6 +282,15 @@ const ItemDetail = () => {
                   onChange={(e) => handleFileChange(e)}
                 />
               </div>
+              {!fileUrl &&
+                product?.images.map((item, index) => (
+                  <img
+                    key={index}
+                    src={item.url}
+                    alt={`Image ${index}`}
+                    className="mx-1 h-[90px] w-[90px]"
+                  />
+                ))}
               {fileUrl &&
                 Object.values(fileUrl as { [s: string]: string }).map(
                   (file, index) => (
@@ -266,6 +320,19 @@ const ItemDetail = () => {
                   id="so_luong"
                   className="mt-1 w-full rounded border-[1px] border-slate-500 p-1"
                   onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
+                  placeholder={product?.quantity}
+                />
+                <label htmlFor="so_luong" className="mt-2  flex">
+                  Số lượng đã bán
+                </label>
+                <input
+                  type="number"
+                  id="so_luong"
+                  className="mt-1 w-full rounded border-[1px] border-slate-500 p-1"
+                  onChange={(e) =>
+                    setQuantitySold(parseInt(e.target.value, 10))
+                  }
+                  placeholder={product?.quantitySold}
                 />
 
                 <label htmlFor="kich_thuoc" className="mt-2  flex">
@@ -276,6 +343,9 @@ const ItemDetail = () => {
                   className="mt-1 w-full rounded border-[1px] border-slate-500 p-1"
                   onChange={(e) => setSize(e.target.value)}
                 >
+                  <option disabled selected hidden>
+                    {product?.size}
+                  </option>
                   <option>S</option>
                   <option>M</option>
                   <option>L</option>
@@ -290,6 +360,7 @@ const ItemDetail = () => {
                   id="mau_sac"
                   className="mt-1 w-full rounded border-[1px] border-slate-500 p-1"
                   onChange={(e) => setColor(e.target.value)}
+                  placeholder={product?.color}
                 />
                 <button
                   className=" mt-5 flex h-[40px] w-full items-center	 justify-center  bg-[#33A0FF]	text-lg text-white"
@@ -306,4 +377,4 @@ const ItemDetail = () => {
   );
 };
 
-export default ItemDetail;
+export default UpdateProduct;

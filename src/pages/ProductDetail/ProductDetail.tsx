@@ -1,165 +1,286 @@
+import { useLocation } from "react-router";
 import "./ProductDetail.css";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { userRequest } from "../../api/requestMethod";
+import ButtonForProduct from "../../components/ButtonForProduct/ButtonForProduct";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/free-mode";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
+import { FreeMode, Navigation, Thumbs } from "swiper/modules";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
+type Images = {
+  id: number;
+  productId: string;
+  url: string;
+};
+type ProductProps = {
+  id: number;
+  productId: string;
+  productName: string;
+  quantity: number;
+  quantitySold: number;
+  cost: number;
+  color: string;
+  size: string;
+  status: string;
+  images: Images;
+  createdAt: Date;
+  updatedAt: Date;
+  distributor: string;
+  description: string;
+};
+type currentUserProps = {
+  username: string;
+  email: string;
+  role: string;
+  access_token: string;
+  refresh_token: string;
+};
 const ItemDetail = () => {
-    return (
-        <div className="bg-[#F0F1F1] mt-1 h-full">
-            <div className="w-11/12 m-auto pt-5 ml-24">
-                <div>
-                    <h1 className="text-[25px] font-bold ">Item Detail</h1>
-                </div>
-                <div className="w-11/12 h-[150px] flex bg-white mt-2">
-                    <div className="flex w-1/2">
-                        <div className="ml-7">
-                            <p className="pt-2">Trạng thái</p>
-                            <p className="pt-4">Nhãn hiệu</p>
-                            <p className="pt-3">Ngày tạo</p>
-                            <p className="pt-3">Ngày cập nhật</p>
-                        </div>
-                        <div className="ml-16">
-                            <div className="pt-2 "><p className="rounded-full border-2 p-1 pl-3 bg-[#FFF7E7] border-[#FFDF9B] text-[#F9B016]">Đang giao dịch</p></div>
-                            <p className="pt-1">: Quần</p>
-                            <p className="pt-3">: 20/12/2023 09:26</p>
-                            <p className="pt-3">: 20/12/2023 09:26</p>
-                        </div>
-                    </div>
-                    <div className="flex w-1/2 justify-end">
-                        <img src="..\..\..\public\test_img.jpg" alt="" className="w-[95px] h-[100px] mt-10 mr-2" />
-                        <img src="..\..\..\public\test_img.jpg" alt="" className="w-[95px] h-[100px] mt-10 mr-2" />
-                        <img src="..\..\..\public\test_img.jpg" alt="" className="w-[95px] h-[100px] mt-10 mr-2" />
-                        {/* <img src="..\..\..\public\test_img.jpg" alt="" className="w-[95px] h-[100px] mt-10 mr-2" /> */}
-                        {/* <img src="..\..\..\public\test_img.jpg" alt="" className="w-[95px] h-[100px] mt-10 mr-2" /> */}
-                        <div className="w-[95px] h-[100px] mt-10 mr-2 bg_item">
-                            <p className=" text-center text-2xl mt-7"> + 2</p>
-                        </div>
-                    </div>
-                </div>
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const location = useLocation();
+  const productId = location.pathname?.split("/")[2] || null;
+  const [product, setProdcut] = useState<ProductProps>();
+  const currentUser: currentUserProps | null = useSelector(
+    (state: RootState) => state?.currentUser?.currentUser,
+  );
+
+  useEffect(() => {
+    const getProductById = async () => {
+      try {
+        const res = await userRequest.get("products/" + productId);
+        setProdcut(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getProductById();
+  }, [productId]);
+
+  console.log(product?.images);
+  const handleAccept = async () => {
+    const dataSend = {
+      id: productId,
+      status: "available",
+    };
+    try {
+      const res = await userRequest.put("products/status", dataSend);
+      toast.success("Thành công", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      setProdcut((prev) => ({
+        ...prev,
+        status: "available",
+      }));
+    } catch (error) {
+      toast.error("Lỗi sever vui lòng thử lại", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      console.log(error);
+    }
+  };
+  const handleDeclined = async () => {
+    const dataSend = {
+      id: productId,
+      status: "not_available",
+    };
+    try {
+      const res = await userRequest.put("products/status", dataSend);
+      toast.success("Thành công", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      setProdcut((prev) => ({
+        ...prev,
+        status: "not_available",
+      }));
+    } catch (error) {
+      toast.error("Lỗi sever vui lòng thử lại", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="mt-1 h-full bg-[#F0F1F1]">
+      <div className="m-auto ml-24 w-11/12 pt-5">
+        {!(currentUser?.role === "COORDINATOR") && (
+          <div className="flex ">
+            <Link to={"/update_product/" + productId} className="link ">
+              <button className=" flex h-[40px]  items-center justify-center bg-[#33A0FF] p-5	 text-[25px]  text-lg	font-bold text-white	">
+                Sửa sản phẩm
+              </button>
+            </Link>
+            <button
+              className=" ml-2 flex  h-[40px] items-center justify-center bg-[green]	 p-5  text-[25px]	text-lg font-bold	text-white"
+              onClick={handleAccept}
+            >
+              Kinh doanh
+            </button>
+            <button
+              className=" ml-2 flex  h-[40px] items-center justify-center bg-[red]	 p-5  text-[25px]	text-lg font-bold text-white	"
+              onClick={handleDeclined}
+            >
+              Ngừng kinh doanh
+            </button>
+          </div>
+        )}
+
+        <div className="mt-2 flex h-[150px] w-11/12 bg-white">
+          <div className="flex w-1/2">
+            <div className="ml-7">
+              <p className="pt-4">Trạng thái:</p>
+              <p className="pt-4">Ngày tạo</p>
+              <p className="pt-3">Ngày cập nhật</p>
             </div>
-
-            <div className="w-11/12 m-auto pt-7 ml-24 h-3/4">
-                <div>
-                    <h1 className="text-[25px] ">Số lượng phiên bản (20)</h1>
-                </div>
-
-                <div className="flex flex-row w-full h-full mb-10">
-
-                    <div className="w-1/3 h-[600px] bg-white mt-2 mr-10 overflow-y-auto">
-
-                        <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[52px] justify-between w-full">
-                            <div className="mt-1 ml-11">
-                                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
-                            </div>
-                            <div className="w-2/3 mt-1">
-                                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                                <p className="text-sm">ao_01-M-X-V</p>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[52px] justify-between w-full">
-                            <div className="mt-1 ml-11">
-                                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
-                            </div>
-                            <div className="w-2/3 mt-0.5">
-                                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                                <p className="text-sm">ao_01-M-X-V</p>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[52px] justify-between w-full">
-                            <div className="mt-1 ml-11">
-                                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
-                            </div>
-                            <div className="w-2/3 mt-0.5">
-                                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                                <p className="text-sm">ao_01-M-X-V</p>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[52px] justify-between w-full">
-                            <div className="mt-1 ml-11">
-                                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
-                            </div>
-                            <div className="w-2/3 mt-0.5">
-                                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                                <p className="text-sm">ao_01-M-X-V</p>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[52px] justify-between w-full">
-                            <div className="mt-1 ml-11">
-                                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
-                            </div>
-                            <div className="w-2/3 mt-0.5">
-                                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                                <p className="text-sm">ao_01-M-X-V</p>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-row border-b-2 border-b-[#D9D9D957] bg-[#D9D9D957] h-[52px] justify-between w-full">
-                            <div className="mt-1 ml-11">
-                                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
-                            </div>
-                            <div className="w-2/3 mt-0.5">
-                                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                                <p className="text-sm">ao_01-M-X-V</p>
-                            </div>
-                        </div>
-                        <div className="flex flex-row border-b-2 border-b-[#D9D9D957] h-[52px] justify-between w-full">
-                            <div className="mt-1 ml-11">
-                                <img src="..\..\..\public\test_img.jpg" alt="" className="w-[47px] h-[43px]" />
-                            </div>
-                            <div className="w-2/3 mt-0.5">
-                                <p className="text-[#2C7CC5]">Áo - M - Xanh - Vải cotton</p>
-                                <p className="text-sm">ao_01-M-X-V</p>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div className="w-[55%] h-5/6 bg-white mt-2">
-                        <div className="h-[40px] border-b-2 border-b-[#D9D9D957]">
-                            <p className="font-bold pt-2  px-5">Thông tin chi tiết phiên bản</p>
-                        </div>
-                        <div className="px-5 pt-3 flex">
-                            <div className="">
-                                <div className="pl-3 font-medium">
-                                    <p>Tên phiên bản sản phẩm</p>
-                                    <p className="mt-2">Mã SKU</p>
-                                    <p className="mt-2">Khối lượng</p>
-                                    <p className="mt-2">Kích thước</p>
-                                    <p className="mt-2">Màu sắc</p>
-                                    <p className="mt-2">Chất liệu</p>
-                                    <p className="mt-2">Giá nhập</p>
-                                    <p className="mt-2">Tồn kho</p>
-                                    <p className="mt-2">Có thể bán</p>
-                                </div>
-                            </div>
-                            <div className="ml-5 font-medium">
-                                <p className="text-[#2C7CC5]">: Áo - M - Xanh - Vải cotton</p>
-                                <p className="mt-2">: ao_01-M-X-V</p>
-                                <p className="mt-2">: 1.5 kg</p>
-                                <p className="mt-2">: M</p>
-                                <p className="mt-2">: Xanh</p>
-                                <p className="mt-2">: Vải cotton</p>
-                                <p className="mt-2">: 100,000</p>
-                                <p className="mt-2">: 250</p>
-                                <p className="mt-2">: 250</p>
-                            </div>
-                            <div className="w-[196px] h-[187px] mt-10">
-                                <img src="..\..\..\public\test_img.jpg" alt="" />
-                            </div>
-                        </div>
-                        <div className="flex">
-                            <p className="min-w-fit pl-8 font-medium mt-5">Mô tả</p>
-                            <p className="pl-5 pr-10 pt-3 font-medium mt-2 font-mono text-[14px]">Quần Jean Ống Rộng Nữ Wash Bụi Màu Đen Và Xanh Lưng Cao Phong Cách Retro Ulzzang Hàn Quốc 460 552 317 315
-                                Với thiết kế rộng rãi, thoải mái, Quần Jean Ống Rộng vừa đảm bảo sự an toàn cho nữ giới khi mặc nhưng cũng vô cùng mềm mại, nữ tính.</p>
-                        </div>
-                    </div>
-
-                </div>
+            <div className="ml-16">
+              <div className="pt-2 ">
+                : <ButtonForProduct type={product?.status} />
+              </div>
+              <p className="pt-2.5">
+                : {product?.createdAt[2]}/{product?.createdAt[1]}/
+                {product?.createdAt[0]}
+              </p>
+              <p className="pt-2">
+                : {product?.updatedAt[2]}/{product?.updatedAt[1]}/
+                {product?.updatedAt[0]}
+              </p>
             </div>
+            <div className="mt-1 flex">
+              <p className="mt-3 min-w-fit pl-8 font-medium">Mô tả :</p>
+              <p className=" pl-5 pr-10 pt-3  text-[14px] ">
+                {product?.description}
+              </p>
+            </div>
+          </div>
         </div>
-    );
+      </div>
+
+      <div className="m-auto ml-24 h-3/4 w-11/12 pt-7">
+        <div className="mb-10 flex h-full w-full flex-row">
+          <div className="mb-10 mt-2 w-[92%] bg-white">
+            <div className="h-[40px] border-b-2 border-b-[#D9D9D957]">
+              <p className="px-5 pt-2  font-bold">
+                Thông tin chi tiết phiên bản
+              </p>
+            </div>
+            <div className="flex px-5 pt-3">
+              <div className="">
+                <div className="pl-3 font-medium">
+                  <p>Tên phiên bản sản phẩm</p>
+                  <p className="mt-2">Mã sản phẩm</p>
+                  <p className="mt-2">Kích thước</p>
+                  <p className="mt-2">Đã bán</p>
+                  <p className="mt-2">Màu sắc</p>
+                  <p className="mt-4">Giá nhập</p>
+                  <p className="mt-2">Tồn kho</p>
+                  <p className="mt-2">Có thể bán</p>
+                </div>
+              </div>
+              <div className="ml-5 font-medium">
+                <p className="text-[#2C7CC5]">: {product?.productName}</p>
+                <p className="mt-2">: {product?.productId}</p>
+                <p className="mt-2">: {product?.size}</p>
+                <p className="mt-2">
+                  : {product?.quantitySold ? product?.quantitySold : 0}
+                </p>
+                <p className="mt-2 flex">
+                  :{" "}
+                  <div
+                    style={{
+                      width: "2rem",
+                      height: "2rem",
+                      marginLeft: "1rem",
+                      background: product?.color,
+                    }}
+                  ></div>
+                </p>
+                <p className="mt-2">
+                  :
+                  {product?.cost.toLocaleString("it-IT", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </p>
+                <p className="mt-2">: {product?.quantity}</p>
+                <p className="mt-2">: {product?.quantity}</p>
+              </div>
+              <div className="ml-80  h-[500px] w-[400px]">
+                <Swiper
+                  style={{
+                    "--swiper-navigation-color": "#fff",
+                    "--swiper-pagination-color": "#fff",
+                  }}
+                  loop={true}
+                  spaceBetween={10}
+                  navigation={true}
+                  thumbs={{ swiper: thumbsSwiper }}
+                  modules={[FreeMode, Navigation, Thumbs]}
+                  className="mySwiper2"
+                >
+                  {product?.images.map((item) => (
+                    <SwiperSlide>
+                      <img src={item.url} />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+                <Swiper
+                  onSwiper={setThumbsSwiper}
+                  loop={true}
+                  spaceBetween={10}
+                  slidesPerView={4}
+                  freeMode={true}
+                  watchSlidesProgress={true}
+                  modules={[FreeMode, Navigation, Thumbs]}
+                  className="mySwiper"
+                >
+                  {product?.images.map((item) => (
+                    <SwiperSlide>
+                      <img src={item.url} />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default ItemDetail;
