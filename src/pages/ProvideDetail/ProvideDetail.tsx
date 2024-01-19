@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./ProvideDetail.css";
 import { useLocation, useNavigate } from "react-router";
 import { userRequest } from "../../api/requestMethod";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { checkValidGmail } from "../../utils/checkValidGmail";
@@ -10,6 +10,8 @@ import { checkValidPhoneNumber } from "../../utils/checkValidPhoneNumber";
 import distributor, { updateSuplierSuccess } from "../../redux/distributor";
 import { updateSuplier } from "../../api/apiUpdateSuplier";
 import ListProduct from "../../components/ListProduct/ListProduct";
+import { checkValidCard } from "../../utils/checkValidPaymentCard";
+import { RootState } from "../../redux/store";
 
 type supilerProps = {
   id: number;
@@ -19,6 +21,7 @@ type supilerProps = {
   distributorCode: string;
   address: string;
   payment: string;
+  paymentCard: string;
   status: string;
   web: string;
   description: string;
@@ -58,6 +61,7 @@ type input = {
   address?: string;
   distributorCode?: string;
   payment?: string;
+  paymentCard?: string | undefined;
   web?: string;
 };
 type dataProps = {
@@ -68,12 +72,33 @@ type dataProps = {
   address?: string;
   distributorCode?: string | undefined;
   payment?: string | undefined;
+  paymentCard?: string | undefined;
   description?: string | undefined;
   web?: string | undefined;
   createAt?: Date;
   updateAt?: Date;
 };
-
+type Images = {
+  id: number;
+  productId: string;
+  url: string;
+};
+type ProductProps = {
+  id: number;
+  productId: string;
+  productName: string;
+  quantity: number;
+  quantitySold: number;
+  cost: number;
+  color: string;
+  size: string;
+  status: string;
+  images: Images;
+  createdAt: Date;
+  updatedAt: Date;
+  distributor: string;
+  description: string;
+};
 type Props = {
   open: boolean;
 };
@@ -82,7 +107,13 @@ const Button = ({ type }: StatusProp) => {
     <button className={`statusButton ${type}`}>{type ? type : "New"}</button>
   );
 };
-
+type currentUserProps = {
+  username: string;
+  email: string;
+  role: string;
+  access_token: string;
+  refresh_token: string;
+};
 const ProvideDetail = ({ open }: Props) => {
   const location = useLocation();
   const suplierId = location.pathname?.split("/")[2] || null;
@@ -102,6 +133,10 @@ const ProvideDetail = ({ open }: Props) => {
   const [ward, setWard] = useState<string>();
   const [inputs, setInputs] = useState<input>({});
   const [description, setDescription] = useState<string>();
+
+  const currentUser: currentUserProps | null = useSelector(
+    (state: RootState) => state?.currentUser?.currentUser,
+  );
 
   const dispatch = useDispatch();
 
@@ -167,6 +202,9 @@ const ProvideDetail = ({ open }: Props) => {
     if (!inputs.web) {
       inputs.web = suplier?.web;
     }
+    if (!inputs.paymentCard) {
+      inputs.paymentCard = suplier?.paymentCard;
+    }
     if (!description) {
       setDescription(suplier?.description);
     }
@@ -175,6 +213,19 @@ const ProvideDetail = ({ open }: Props) => {
     } else {
       console.log(city, district, ward);
       inputs.address = `${city}, ${district}, ${ward}, ${inputs.address}`;
+    }
+    if (!checkValidCard(inputs.paymentCard)) {
+      toast.error("Mã thẻ không hợp lệ vui lòng nhập lại", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
     }
     if (!checkValidGmail(inputs.email)) {
       toast.error("Mail bị sai vui lòng nhập lại", {
@@ -211,7 +262,8 @@ const ProvideDetail = ({ open }: Props) => {
       address: inputs.address,
       distributorCode: inputs.distributorCode,
       payment: inputs.payment,
-      description: description,
+      paymentCard: inputs.paymentCard,
+      description: description ? description : suplier?.description,
       web: inputs.web,
       createAt: new Date(),
       updateAt: new Date(),
@@ -250,13 +302,13 @@ const ProvideDetail = ({ open }: Props) => {
   };
   const [product, setProduct] = useState<ProductProps[]>();
   const [page, setPage] = useState(0);
-  const[totalPage,setTotalPage] = useState();
-    const handlePageChange = async (
-      event: React.ChangeEvent<HTMLInputElement>,
-      page: number,
-    ) => {
-      setPage(page - 1);
-    };
+  const [totalPage, setTotalPage] = useState();
+  const handlePageChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    page: number,
+  ) => {
+    setPage(page - 1);
+  };
   useEffect(() => {
     const getProduct = async () => {
       try {
@@ -269,14 +321,14 @@ const ProvideDetail = ({ open }: Props) => {
       }
     };
     getProduct();
-  }, [suplier?.distributorCode,page]);
+  }, [suplier?.distributorCode, page]);
   useEffect(() => {
     const getTolProduct = async () => {
       try {
         const res = await userRequest.get("products/totalpage_code", {
           params: { code: suplier.distributorCode },
         });
-         setTotalPage(res.data);
+        setTotalPage(res.data);
       } catch (error) {
         console.log(error);
       }
@@ -284,6 +336,7 @@ const ProvideDetail = ({ open }: Props) => {
     getTolProduct();
   }, [suplier?.distributorCode]);
 
+  console.log(suplier);
 
   return (
     <>
@@ -312,7 +365,7 @@ const ProvideDetail = ({ open }: Props) => {
             <p className="info_value">{suplier?.phone}</p>
           </div>
           <div className="info_detail">
-            <p className="info_title">Địa chỉ nhà cung cấp : </p>
+            <p className="info_title">Địa chỉ nhà cung cấp: </p>
             <p className="info_value" style={{ maxWidth: "30rem" }}>
               {suplier?.address}
             </p>
@@ -365,7 +418,7 @@ const ProvideDetail = ({ open }: Props) => {
                 </p>
               )
             ) : (
-              suplier?.description?.length
+              suplier?.description
             )}
           </div>
         </div>
@@ -378,234 +431,248 @@ const ProvideDetail = ({ open }: Props) => {
         handleChange={handlePageChange}
         setProduct={setProduct}
       />
-      <form className="provide-container1">
-        <div className="titleContainer">
-          <h2 className="title">Chỉnh sửa thông tin nhà cung cấp :</h2>
-          <div className="btnsContainer">
-            <button className="addSuplier" onClick={handleSave}>
-              Lưu
-            </button>
-            <button className="help">
-              <a
-                href="https://support.sapo.vn/chi-tiet-nha-cung-cap"
-                style={{ textDecoration: "none" }}
+      {!(currentUser?.role === "EMPLOYEESTOCK") && (
+        <form className="provide-container1">
+          <div className="titleContainer">
+            <h2 className="title">Chỉnh sửa thông tin nhà cung cấp :</h2>
+            <div className="btnsContainer">
+              <button className="addSuplier" onClick={handleSave}>
+                Lưu
+              </button>
+              <button className="help">
+                <a
+                  href="https://support.sapo.vn/chi-tiet-nha-cung-cap"
+                  style={{ textDecoration: "none" }}
+                >
+                  Trợ giúp
+                </a>
+              </button>
+            </div>
+          </div>
+          <div className="formContainer">
+            <div className="inputContainer">
+              <label htmlFor="name">
+                Tên nhà cung cấp<span style={{ color: "red" }}>* </span>:
+              </label>
+              <input
+                name="name"
+                id="name"
+                type="text"
+                placeholder={suplier?.name}
+                className="input"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="inputContainer">
+              <label htmlFor="phone">
+                SĐT nhà cung cấp<span style={{ color: "red" }}>* </span>:
+              </label>
+              <input
+                name="phone"
+                id="phone"
+                type="text"
+                placeholder={suplier?.phone}
+                className="input"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="inputContainer">
+              <label htmlFor="email">
+                Email nhà cung cấp<span style={{ color: "red" }}>* </span>:
+              </label>
+              <input
+                name="email"
+                id="email"
+                type="text"
+                placeholder={suplier?.email}
+                className="input"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="inputContainer">
+              <label htmlFor="city">
+                Tỉnh/Thành Phố<span style={{ color: "red" }}>* </span>:
+              </label>
+              <select
+                name="city"
+                id="city"
+                className="input"
+                onChange={(e) => setCity(e.target.value)}
               >
-                Trợ giúp
-              </a>
-            </button>
-          </div>
-        </div>
-        <div className="formContainer">
-          <div className="inputContainer">
-            <label htmlFor="name">
-              Tên nhà cung cấp<span style={{ color: "red" }}>* </span>:
-            </label>
-            <input
-              name="name"
-              id="name"
-              type="text"
-              placeholder={suplier?.name}
-              className="input"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="inputContainer">
-            <label htmlFor="phone">
-              SĐT nhà cung cấp<span style={{ color: "red" }}>* </span>:
-            </label>
-            <input
-              name="phone"
-              id="phone"
-              type="text"
-              placeholder={suplier?.phone}
-              className="input"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="inputContainer">
-            <label htmlFor="email">
-              Email nhà cung cấp<span style={{ color: "red" }}>* </span>:
-            </label>
-            <input
-              name="email"
-              id="email"
-              type="text"
-              placeholder={suplier?.email}
-              className="input"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="inputContainer">
-            <label htmlFor="city">
-              Tỉnh/Thành Phố<span style={{ color: "red" }}>* </span>:
-            </label>
-            <select
-              name="city"
-              id="city"
-              className="input"
-              onChange={(e) => setCity(e.target.value)}
-            >
-              <option
-                value={suplier?.address?.split(", ")[0]}
-                disabled
-                selected
-                hidden
-              >
-                {suplier?.address?.split(", ")[0]}
-              </option>
-              {provine?.map((item, index) => (
-                <option value={item.name} key={index}>
-                  {item.name}
+                <option
+                  value={suplier?.address?.split(", ")[0]}
+                  disabled
+                  selected
+                  hidden
+                >
+                  {suplier?.address?.split(", ")[0]}
                 </option>
-              ))}
-            </select>
-          </div>
-          <div className="inputContainer">
-            <label htmlFor="district">
-              Quận/Huyện<span style={{ color: "red" }}>* </span>:
-            </label>
-
-            <select
-              name="district"
-              id="district"
-              className="input"
-              onChange={(e) => setDistrict(e.target.value)}
-            >
-              <option
-                value={suplier?.address?.split(", ")[1]}
-                disabled
-                selected
-                hidden
-              >
-                {suplier?.address?.split(", ")[1]}
-              </option>
-              {provine
-                .find((item) => {
-                  if (city) {
-                    return item?.name === city;
-                  } else {
-                    return item?.name === suplier?.address?.split(", ")[0];
-                  }
-                })
-                ?.districts?.map((item: district, index: number) => (
+                {provine?.map((item, index) => (
                   <option value={item.name} key={index}>
                     {item.name}
                   </option>
                 ))}
-            </select>
-          </div>
-          <div className="inputContainer">
-            <label htmlFor="ward">
-              Phường/Thị trấn<span style={{ color: "red" }}>* </span>:
-            </label>
-            <select
-              name="ward"
-              id="ward"
-              className="input"
-              onChange={(e) => setWard(e.target.value)}
-            >
-              <option
-                value={suplier?.address?.split(", ")[2]}
-                disabled
-                selected
-                hidden
+              </select>
+            </div>
+            <div className="inputContainer">
+              <label htmlFor="district">
+                Quận/Huyện<span style={{ color: "red" }}>* </span>:
+              </label>
+
+              <select
+                name="district"
+                id="district"
+                className="input"
+                onChange={(e) => setDistrict(e.target.value)}
               >
-                {suplier?.address?.split(", ")[2]}
-              </option>
-              {provine
-                .find((item) => {
-                  if (city) {
-                    return item.name === city;
-                  } else {
-                    return item.name === suplier?.address?.split(", ")[0];
-                  }
-                })
-                ?.districts.find((item) => {
-                  if (district) {
-                    return item.name === district;
-                  } else {
-                    return item.name === suplier?.address?.split(", ")[1];
-                  }
-                })
-                ?.wards?.map((item: ward, index: number) => (
-                  <option value={item.name} key={index}>
-                    {item?.name}
-                  </option>
-                ))}
-            </select>
+                <option
+                  value={suplier?.address?.split(", ")[1]}
+                  disabled
+                  selected
+                  hidden
+                >
+                  {suplier?.address?.split(", ")[1]}
+                </option>
+                {provine
+                  .find((item) => {
+                    if (city) {
+                      return item?.name === city;
+                    } else {
+                      return item?.name === suplier?.address?.split(", ")[0];
+                    }
+                  })
+                  ?.districts?.map((item: district, index: number) => (
+                    <option value={item.name} key={index}>
+                      {item.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <div className="inputContainer">
+              <label htmlFor="ward">
+                Phường/Thị trấn<span style={{ color: "red" }}>* </span>:
+              </label>
+              <select
+                name="ward"
+                id="ward"
+                className="input"
+                onChange={(e) => setWard(e.target.value)}
+              >
+                <option
+                  value={suplier?.address?.split(", ")[2]}
+                  disabled
+                  selected
+                  hidden
+                >
+                  {suplier?.address?.split(", ")[2]}
+                </option>
+                {provine
+                  .find((item) => {
+                    if (city) {
+                      return item.name === city;
+                    } else {
+                      return item.name === suplier?.address?.split(", ")[0];
+                    }
+                  })
+                  ?.districts.find((item) => {
+                    if (district) {
+                      return item.name === district;
+                    } else {
+                      return item.name === suplier?.address?.split(", ")[1];
+                    }
+                  })
+                  ?.wards?.map((item: ward, index: number) => (
+                    <option value={item.name} key={index}>
+                      {item?.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <div className="inputContainer1">
+              <label htmlFor="address">
+                Địa chỉ cụ thể nhà cung cấp
+                <span style={{ color: "red" }}>* </span>:
+              </label>
+              <input
+                name="address"
+                id="address"
+                type="text"
+                placeholder={suplier?.address?.split(", ")[3]}
+                className="input1"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="inputContainer">
+              <label htmlFor="distributorCode">
+                Mã nhà cung cấp<span style={{ color: "red" }}>* </span>:
+              </label>
+              <input
+                name="distributorCode"
+                id="distributorCode"
+                type="text"
+                placeholder={suplier?.distributorCode}
+                className="input"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="inputContainer">
+              <label htmlFor="payment">
+                Phương thức thanh toán <span style={{ color: "red" }}>* </span>:
+              </label>
+              <select
+                name="payment"
+                id="payment"
+                className="input"
+                onChange={handleChange}
+              >
+                <option value={suplier?.payment} disabled selected hidden>
+                  {suplier?.payment}
+                </option>
+                <option value="COD">COD</option>
+                <option value="Banking">Banking</option>
+              </select>
+            </div>
+
+            <div className="inputContainer">
+              <label htmlFor="web">
+                Địa chỉ Website nhà cung cấp
+                <span style={{ color: "red" }}>* </span>:
+              </label>
+              <input
+                name="web"
+                id="web"
+                type="text"
+                placeholder={suplier?.web}
+                className="input"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="inputContainer1">
+              <label htmlFor="paymentCard">Thẻ thanh toán(nếu có):</label>
+              <input
+                name="paymentCard"
+                id="paymentCard"
+                type="text"
+                placeholder={suplier?.paymentCard}
+                className="input1"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="inputContainer1">
+              <label htmlFor="description">
+                Chi tiết nhà cung cấp<span style={{ color: "red" }}>* </span>:
+              </label>
+              <textarea
+                name="description"
+                id="description"
+                placeholder={suplier?.description}
+                className="input2"
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
           </div>
-          <div className="inputContainer1">
-            <label htmlFor="address">
-              Địa chỉ cụ thể nhà cung cấp
-              <span style={{ color: "red" }}>* </span>:
-            </label>
-            <input
-              name="address"
-              id="address"
-              type="text"
-              placeholder={suplier?.address?.split(", ")[3]}
-              className="input1"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="inputContainer">
-            <label htmlFor="distributorCode">
-              Mã nhà cung cấp<span style={{ color: "red" }}>* </span>:
-            </label>
-            <input
-              name="distributorCode"
-              id="distributorCode"
-              type="text"
-              placeholder={suplier?.distributorCode}
-              className="input"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="inputContainer">
-            <label htmlFor="payment">
-              Phương thức thanh toán <span style={{ color: "red" }}>* </span>:
-            </label>
-            <select
-              name="payment"
-              id="payment"
-              className="input"
-              onChange={handleChange}
-            >
-              <option value={suplier?.payment} disabled selected hidden>
-                {suplier?.payment}
-              </option>
-              <option value="COD">COD</option>
-              <option value="Banking">Banking</option>
-            </select>
-          </div>
-          <div className="inputContainer">
-            <label htmlFor="web">
-              Địa chỉ Website nhà cung cấp
-              <span style={{ color: "red" }}>* </span>:
-            </label>
-            <input
-              name="web"
-              id="web"
-              type="text"
-              placeholder={suplier?.web}
-              className="input"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="inputContainer1">
-            <label htmlFor="description">
-              Chi tiết nhà cung cấp<span style={{ color: "red" }}>* </span>:
-            </label>
-            <textarea
-              name="description"
-              id="description"
-              placeholder={suplier?.description}
-              className="input2"
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-        </div>
-      </form>
+        </form>
+      )}
     </>
   );
 };

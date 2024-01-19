@@ -4,6 +4,8 @@ import { useLocation } from "react-router";
 import { userRequest } from "../../api/requestMethod";
 import ButtonForProduct from "../../components/ButtonForProduct/ButtonForProduct";
 import { toast } from "react-toastify";
+import { RootState } from "../../redux/store";
+import { useSelector } from "react-redux";
 
 type Images = {
   id: number;
@@ -38,6 +40,13 @@ type TransProp = {
   createdAt: Date;
   updatedAt: Date;
 };
+type currentUserProps = {
+  username: string;
+  email: string;
+  role: string;
+  access_token: string;
+  refresh_token: string;
+};
 const Browser = () => {
   const location = useLocation();
   const transId = location.pathname?.split("/")[2] || null;
@@ -55,8 +64,6 @@ const Browser = () => {
     };
     getTransById();
   }, [transId]);
-
-  console.log(trans);
 
   const handleAccept = async () => {
     const dataSend = {
@@ -107,7 +114,7 @@ const Browser = () => {
         progress: undefined,
         theme: "light",
       });
-      return
+      return;
     }
     const dataSend = {
       id: transId,
@@ -145,56 +152,59 @@ const Browser = () => {
       console.log(error);
     }
   };
-    const handleDeclined = async () => {
-      if (!description) {
-        toast.warning("Hãy nhập lý do hủy đơn vào ô thông tin đơn hàng", {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        return;
-      }
-      const dataSend = {
-        id: transId,
+  const handleDeclined = async () => {
+    if (!description) {
+      toast.warning("Hãy nhập lý do hủy đơn vào ô thông tin đơn hàng", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
+    }
+    const dataSend = {
+      id: transId,
+      status: "declined",
+      description: description,
+    };
+    try {
+      const res = await userRequest.put("transcation/status", dataSend);
+      toast.success("Thành công", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      setTrans((prev) => ({
+        ...prev,
         status: "declined",
         description: description,
-      };
-      try {
-        const res = await userRequest.put("transcation/status", dataSend);
-        toast.success("Thành công", {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        setTrans((prev) => ({
-          ...prev,
-          status: "declined",
-          description: description,
-        }));
-      } catch (error) {
-        toast.error("Lỗi sever vui lòng thử lại", {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        console.log(error);
-      }
-    };
+      }));
+    } catch (error) {
+      toast.error("Lỗi sever vui lòng thử lại", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      console.log(error);
+    }
+  };
+  const currentUser: currentUserProps | null = useSelector(
+    (state: RootState) => state?.currentUser?.currentUser,
+  );
 
   return (
     <div className="browserContainer">
@@ -214,14 +224,20 @@ const Browser = () => {
           <ButtonForProduct type={trans?.status} />
         </div>
       </div>
-      <div className="browser_btnContainer">
-        <p className="browser_title">Duyệt đơn :</p>
-        <button className="btnstatusApproved" onClick={handleAccept}>
-          Nhận đơn thành công
-        </button>
-        <button className="statusDeclined" onClick={handleDeclined}>Hủy đơn</button>
-        <button className="statusWrong" onClick={handleWrong}>Đơn có vấn đề</button>
-      </div>
+      {!(currentUser?.role === "EMPLOYEESTOCK") && (
+        <div className="browser_btnContainer">
+          <p className="browser_title">Duyệt đơn :</p>
+          <button className="btnstatusApproved" onClick={handleAccept}>
+            Nhận đơn thành công
+          </button>
+          <button className="statusDeclined" onClick={handleDeclined}>
+            Hủy đơn
+          </button>
+          <button className="statusWrong" onClick={handleWrong}>
+            Đơn có vấn đề
+          </button>
+        </div>
+      )}
       <p
         className="browser_title"
         style={{ marginTop: "1rem", marginBottom: "1rem" }}

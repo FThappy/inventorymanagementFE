@@ -10,6 +10,9 @@ import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 type Images = {
   id: number;
@@ -32,11 +35,21 @@ type ProductProps = {
   distributor: string;
   description: string;
 };
+type currentUserProps = {
+  username: string;
+  email: string;
+  role: string;
+  access_token: string;
+  refresh_token: string;
+};
 const ItemDetail = () => {
-    const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const location = useLocation();
   const productId = location.pathname?.split("/")[2] || null;
   const [product, setProdcut] = useState<ProductProps>();
+  const currentUser: currentUserProps | null = useSelector(
+    (state: RootState) => state?.currentUser?.currentUser,
+  );
 
   useEffect(() => {
     const getProductById = async () => {
@@ -50,18 +63,103 @@ const ItemDetail = () => {
     getProductById();
   }, [productId]);
 
-  console.log(product?.images)
+  console.log(product?.images);
+  const handleAccept = async () => {
+    const dataSend = {
+      id: productId,
+      status: "available",
+    };
+    try {
+      const res = await userRequest.put("products/status", dataSend);
+      toast.success("Thành công", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      setProdcut((prev) => ({
+        ...prev,
+        status: "available",
+      }));
+    } catch (error) {
+      toast.error("Lỗi sever vui lòng thử lại", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      console.log(error);
+    }
+  };
+  const handleDeclined = async () => {
+    const dataSend = {
+      id: productId,
+      status: "not_available",
+    };
+    try {
+      const res = await userRequest.put("products/status", dataSend);
+      toast.success("Thành công", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      setProdcut((prev) => ({
+        ...prev,
+        status: "not_available",
+      }));
+    } catch (error) {
+      toast.error("Lỗi sever vui lòng thử lại", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      console.log(error);
+    }
+  };
 
   return (
     <div className="mt-1 h-full bg-[#F0F1F1]">
       <div className="m-auto ml-24 w-11/12 pt-5">
-        <div className="flex ">
-          <Link to={"/update_product/" + productId} className="link ">
-            <button className=" flex h-[40px]  items-center justify-center bg-[#33A0FF] p-5	 text-[25px]  text-lg	font-bold text-white	">
-              Sửa sản phẩm
+        {!(currentUser?.role === "COORDINATOR") && (
+          <div className="flex ">
+            <Link to={"/update_product/" + productId} className="link ">
+              <button className=" flex h-[40px]  items-center justify-center bg-[#33A0FF] p-5	 text-[25px]  text-lg	font-bold text-white	">
+                Sửa sản phẩm
+              </button>
+            </Link>
+            <button
+              className=" ml-2 flex  h-[40px] items-center justify-center bg-[green]	 p-5  text-[25px]	text-lg font-bold	text-white"
+              onClick={handleAccept}
+            >
+              Kinh doanh
             </button>
-          </Link>
-        </div>
+            <button
+              className=" ml-2 flex  h-[40px] items-center justify-center bg-[red]	 p-5  text-[25px]	text-lg font-bold text-white	"
+              onClick={handleDeclined}
+            >
+              Ngừng kinh doanh
+            </button>
+          </div>
+        )}
+
         <div className="mt-2 flex h-[150px] w-11/12 bg-white">
           <div className="flex w-1/2">
             <div className="ml-7">
@@ -117,7 +215,9 @@ const ItemDetail = () => {
                 <p className="text-[#2C7CC5]">: {product?.productName}</p>
                 <p className="mt-2">: {product?.productId}</p>
                 <p className="mt-2">: {product?.size}</p>
-                <p className="mt-2">: {product?.quantitySold ? product?.quantitySold : 0}</p>
+                <p className="mt-2">
+                  : {product?.quantitySold ? product?.quantitySold : 0}
+                </p>
                 <p className="mt-2 flex">
                   :{" "}
                   <div

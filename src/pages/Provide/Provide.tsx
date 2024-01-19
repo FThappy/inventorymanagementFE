@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  DataGrid,
-  GridColDef,
-  GridRowId,
-} from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import { Link } from "react-router-dom";
 
 import "./Provide.css";
@@ -64,7 +60,13 @@ const Button = ({ type }: StatusProp) => {
     <button className={`statusButton ${type}`}>{type ? type : "New"}</button>
   );
 };
-
+type currentUserProps = {
+  username: string;
+  email: string;
+  role: string;
+  access_token: string;
+  refresh_token: string;
+};
 const Provide = ({ open }: Props) => {
   const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   const [data, setData] = useState<data[]>([]);
@@ -76,6 +78,9 @@ const Provide = ({ open }: Props) => {
 
   const suplier: supilerProps[] = useSelector(
     (state: RootState) => state?.suplier?.suplier,
+  );
+  const currentUser: currentUserProps | null = useSelector(
+    (state: RootState) => state?.currentUser?.currentUser,
   );
 
   const dispatch = useDispatch();
@@ -202,7 +207,7 @@ const Provide = ({ open }: Props) => {
         "SĐT Nhà cung cấp": item.phone,
         Status: item.status ? item.status : "Nhà cung cấp mới",
         "Địa chỉ web": item.web ? item.web : "Chưa cung cấp",
-        "Mô tả": item.description, 
+        "Mô tả": item.description,
         "Phương thức thanh toán": item.payment,
         "Địa chỉ": item.address,
         "Thời gian tạo": created,
@@ -217,20 +222,20 @@ const Provide = ({ open }: Props) => {
     const wb = utils.book_new();
 
     // Đặt độ rộng của các cột
-  ws["!cols"] = [
-    { wpx: 50 }, // Id
-    { wpx: 150 }, // Mã nhà cung cấp
-    { wpx: 200 }, // Tên nhà cung cấp
-    { wpx: 150 }, // Email
-    { wpx: 150 }, // SĐT Nhà cung cấp
-    { wpx: 200 },
-    { wpx: 250 },
-    { wpx: 300 },
-    { wpx: 100 },
-    { wpx: 300 },
-    { wpx: 200 },
-    { wpx: 200 },
-  ];
+    ws["!cols"] = [
+      { wpx: 50 }, // Id
+      { wpx: 150 }, // Mã nhà cung cấp
+      { wpx: 200 }, // Tên nhà cung cấp
+      { wpx: 150 }, // Email
+      { wpx: 150 }, // SĐT Nhà cung cấp
+      { wpx: 200 },
+      { wpx: 250 },
+      { wpx: 300 },
+      { wpx: 100 },
+      { wpx: 300 },
+      { wpx: 200 },
+      { wpx: 200 },
+    ];
 
     utils.book_append_sheet(wb, ws, "Data");
 
@@ -419,39 +424,41 @@ const Provide = ({ open }: Props) => {
         );
       },
     },
-    {
-      field: "action",
-      headerName: "Action",
-      // width: windowWidth < 1800 ? 50 : 100,
-      flex: 0.5,
-      headerClassName: "customHeader",
-      headerAlign: "center",
-      renderHeader: () => (
-        <strong
-          style={{
-            fontWeight: "bold",
-            fontSize: open ? "1rem" : "1.2rem",
-          }}
-        >
-          Xóa
-        </strong>
-      ),
-      renderCell: (params) => {
-        return (
-          <Grid container justifyContent="center" alignItems="center">
-            <button
-              style={{ border: "none", background: "none" }}
-              onClick={(e) => handleDelete(e, params.row.id)}
-            >
-              <DeleteOutline
-                className="productListDelete"
-                sx={{ fontSize: "2.3rem", marginLeft: "0.5rem" }}
-              />
-            </button>
-          </Grid>
-        );
+      {
+        field: "action",
+        headerName: "Action",
+        // width: windowWidth < 1800 ? 50 : 100,
+        flex: 0.5,
+        headerClassName: "customHeader",
+        headerAlign: "center",
+        renderHeader: () => (
+          <strong
+            style={{
+              fontWeight: "bold",
+              fontSize: open ? "1rem" : "1.2rem",
+            }}
+          >
+            Xóa
+          </strong>
+        ),
+        renderCell: (params) => {
+          return (
+            <Grid container justifyContent="center" alignItems="center">
+              {!(currentUser?.role === "EMPLOYEESTOCK") && (
+                <button
+                  style={{ border: "none", background: "none" }}
+                  onClick={(e) => handleDelete(e, params.row.id)}
+                >
+                  <DeleteOutline
+                    className="productListDelete"
+                    sx={{ fontSize: "2.3rem", marginLeft: "0.5rem" }}
+                  />
+                </button>
+              )}
+            </Grid>
+          );
+        },
       },
-    },
   ];
 
   return (
@@ -461,12 +468,17 @@ const Provide = ({ open }: Props) => {
           <FileDownloadIcon />
           Xuất File
         </button>
-        <button className="deleteSuplier" onClick={handleDeleteMulti}>
-          Xóa nhiều nhà cung cấp
-        </button>
-        <Link to="/create_suppliers" className="link">
-          <button className="addSuplier">Thêm nhà cung cấp</button>
-        </Link>
+        {!(currentUser?.role === "EMPLOYEESTOCK") && (
+          <>
+            <button className="deleteSuplier" onClick={handleDeleteMulti}>
+              Xóa nhiều nhà cung cấp
+            </button>
+            <Link to="/create_suppliers" className="link">
+              <button className="addSuplier">Thêm nhà cung cấp</button>
+            </Link>
+          </>
+        )}
+
         <button className="help">
           <a
             href="https://support.sapo.vn/chi-tiet-nha-cung-cap"

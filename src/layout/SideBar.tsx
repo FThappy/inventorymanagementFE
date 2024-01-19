@@ -34,6 +34,8 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import { Link } from "react-router-dom";
+import { RootState } from "../redux/store";
+import { useSelector } from "react-redux";
 
 const drawerWidth = 240;
 
@@ -120,13 +122,22 @@ interface SideBarProps {
   handleDrawerOpen: () => void;
   handleDrawerClose: () => void;
 }
-
+type currentUserProps = {
+  username: string;
+  email: string;
+  role: string;
+  access_token: string;
+  refresh_token: string;
+};
 export default function SideBar({
   open,
   handleDrawerOpen,
   handleDrawerClose,
 }: SideBarProps) {
   const [isExpanded, setExpanded] = React.useState(false);
+    const currentUser: currentUserProps | null = useSelector(
+      (state: RootState) => state?.currentUser?.currentUser,
+    );
 
   const handleToggle = () => {
     setExpanded(!isExpanded);
@@ -295,22 +306,26 @@ export default function SideBar({
                         />
                       </ListItemButton>
                     </Link>
-                    <Link to="/add_product" className="link">
-                      <ListItemButton>
-                        <ListItemText
-                          primary="Thêm sản phẩm"
-                          sx={{ opacity: open ? 1 : 0, color: "white" }}
-                        />
-                      </ListItemButton>
-                    </Link>
-                    <Link to="/order_suppliers" className="link">
-                      <ListItemButton>
-                        <ListItemText
-                          primary="Đặt hàng nhập"
-                          sx={{ opacity: open ? 1 : 0, color: "white" }}
-                        />
-                      </ListItemButton>
-                    </Link>
+                    {!(currentUser?.role === "COORDINATOR") && (
+                      <Link to="/add_product" className="link">
+                        <ListItemButton>
+                          <ListItemText
+                            primary="Thêm sản phẩm"
+                            sx={{ opacity: open ? 1 : 0, color: "white" }}
+                          />
+                        </ListItemButton>
+                      </Link>
+                    )}
+                    {!(currentUser?.role === "EMPLOYEESTOCK") && (
+                      <Link to="/order_suppliers" className="link">
+                        <ListItemButton>
+                          <ListItemText
+                            primary="Đặt hàng nhập"
+                            sx={{ opacity: open ? 1 : 0, color: "white" }}
+                          />
+                        </ListItemButton>
+                      </Link>
+                    )}
                     <Link to="/stock_adjustments" className="link">
                       <ListItemButton>
                         <ListItemText

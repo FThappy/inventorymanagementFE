@@ -5,6 +5,9 @@ import './ListItem.css';
 import { userRequest } from "../../api/requestMethod";
 import ListProduct from "../../components/ListProduct/ListProduct";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { current } from "@reduxjs/toolkit";
 type Props = {
   open: boolean;
 };
@@ -28,6 +31,13 @@ type ProductProps = {
   updateAt: Date;
   distributor: string;
   description: string;
+};
+type currentUserProps = {
+  username: string;
+  email: string;
+  role: string;
+  access_token: string;
+  refresh_token: string;
 };
 const ListItem = ({ open }: Props) => {
   const [product, setProduct] = useState<ProductProps[]>();
@@ -63,6 +73,9 @@ const ListItem = ({ open }: Props) => {
     };
     getTolProduct();
   }, []);
+      const currentUser: currentUserProps | null = useSelector(
+        (state: RootState) => state?.currentUser?.currentUser,
+      );
   return (
     <div>
       <div className="mx-1 flex-row">
@@ -76,12 +89,14 @@ const ListItem = ({ open }: Props) => {
           </div>
           <div className="border-b-[3px] border-b-zinc-950"></div>
         </div>
-        <div className="float-right m-4 flex h-[40px] w-fit cursor-pointer flex-row bg-[#33A0FF] text-lg text-white">
-          <Link to={"/add_product"} className="link flex">
-            <IoIosAdd className="ml-1 mt-2 text-2xl" />
-            <p className="pr-3 pt-1.5">Thêm sản phẩm</p>
-          </Link>
-        </div>
+        {!(currentUser.role === "COORDINATOR") && (
+          <div className="float-right m-4 flex h-[40px] w-fit cursor-pointer flex-row bg-[#33A0FF] text-lg text-white">
+            <Link to={"/add_product"} className="link flex">
+              <IoIosAdd className="ml-1 mt-2 text-2xl" />
+              <p className="pr-3 pt-1.5">Thêm sản phẩm</p>
+            </Link>
+          </div>
+        )}
       </div>
       <ListProduct
         open={open}
