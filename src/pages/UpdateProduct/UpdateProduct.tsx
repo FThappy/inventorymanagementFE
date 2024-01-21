@@ -99,6 +99,45 @@ const UpdateProduct = () => {
     } else {
       formData.append("distributor_code", supplierCode);
     }
+        if (cost && cost < 0) {
+          toast.error("Không được để là số âm", {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          return;
+        }
+        if (quantity && quantity < 0) {
+          toast.error("Không được để là số âm", {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+          return;
+        }
+                if (quantitySold && quantitySold < 0) {
+                  toast.error("Không được để là số âm", {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                  });
+                  return;
+                }
     if (!cost) {
       formData.append("cost", String(product.cost || 0));
     } else {
@@ -366,7 +405,7 @@ const UpdateProduct = () => {
                   className=" mt-5 flex h-[40px] w-full items-center	 justify-center  bg-[#33A0FF]	text-lg text-white"
                   onClick={handleAdd}
                 >
-                  Thêm sản phẩm
+                  Sửa sản phẩm
                 </button>
               </form>
             </div>

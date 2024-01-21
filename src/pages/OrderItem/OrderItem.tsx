@@ -61,7 +61,7 @@ const OrderItem = ({ open }: Props) => {
     (state: RootState) => state?.suplier?.suplier,
   );
   const [suplier, setSuplier] = useState<string>(
-    distributor[0].distributorCode,
+    distributor[0]?.distributorCode,
   );
   const [inputs, setInputs] = useState<any>([]);
 
