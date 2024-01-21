@@ -214,7 +214,7 @@ const ProvideDetail = ({ open }: Props) => {
       console.log(city, district, ward);
       inputs.address = `${city}, ${district}, ${ward}, ${inputs.address}`;
     }
-    if (!checkValidCard(inputs.paymentCard)) {
+    if (inputs.paymentCard&&!checkValidCard(inputs.paymentCard)) {
       toast.error("Mã thẻ không hợp lệ vui lòng nhập lại", {
         position: "bottom-right",
         autoClose: 5000,

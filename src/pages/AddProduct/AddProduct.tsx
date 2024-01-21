@@ -68,6 +68,32 @@ const ItemDetail = () => {
       });
       return;
     }
+    if (cost && cost < 0) {
+      toast.error("Không được để là số âm", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
+    }
+    if (quantity && quantity < 0) {
+      toast.error("Không được để là số âm", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
+    }
     const formData = new FormData();
     // Thêm thông tin sản phẩm vào FormData
     formData.append("productName", name);
